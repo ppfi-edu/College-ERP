@@ -1,62 +1,125 @@
-const Faculty = require('../models/Faculty');
+// const Faculty = require('../models/Faculty');
+
+// exports.getAllFaculty = async (req, res) => {
+//   try {
+//     const faculty = await Faculty.find();
+//     res.json(faculty);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// exports.getFacultyById = async (req, res) => {
+//   try {
+//     const faculty = await Faculty.findById(req.params.id);
+//     if (!faculty) {
+//       return res.status(404).json({ message: 'Faculty member not found' });
+//     }
+//     res.json(faculty);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// exports.createFaculty = async (req, res) => {
+//   try {
+//     const newFaculty = new Faculty(req.body);
+//     await newFaculty.save();
+//     res.status(201).json(newFaculty);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+
+// exports.updateFaculty = async (req, res) => {
+//   try {
+//     const updatedFaculty = await Faculty.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//     if (!updatedFaculty) {
+//       return res.status(404).json({ message: 'Faculty member not found' });
+//     }
+//     res.json(updatedFaculty);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+
+// exports.deleteFaculty = async (req, res) => {
+//   try {
+//     const faculty = await Faculty.findOne({ email: req.params.email });
+
+//     if (!faculty) {
+//       return res.status(404).json({ message: "Faculty not found" });
+//     }
+
+//     const deletedFaculty = await Faculty.findByIdAndDelete(faculty._id);
+//     if (!deletedFaculty) {
+//       return res.status(404).json({ message: 'Faculty member not found' });
+//     }
+//     res.json({ message: 'Faculty member deleted successfully' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+const connection = require("../utils/db");
 
 exports.getAllFaculty = async (req, res) => {
-  try {
-    const faculty = await Faculty.find();
-    res.json(faculty);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const [faculty] = await connection.promise().query('SELECT * FROM faculty');
+        res.json(faculty);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 exports.getFacultyById = async (req, res) => {
-  try {
-    const faculty = await Faculty.findById(req.params.id);
-    if (!faculty) {
-      return res.status(404).json({ message: 'Faculty member not found' });
+    try {
+        const [faculty] = await connection.promise().query('SELECT * FROM faculty WHERE id = ?', [req.params.id]);
+        if (faculty.length === 0) {
+            return res.status(404).json({ message: 'Faculty member not found' });
+        }
+        res.json(faculty[0]); // Return the first faculty object
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    res.json(faculty);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
 
 exports.createFaculty = async (req, res) => {
-  try {
-    const newFaculty = new Faculty(req.body);
-    await newFaculty.save();
-    res.status(201).json(newFaculty);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    try {
+        const { name, email, password, ...otherDetails } = req.body; // Destructure to get the necessary fields
+        const [result] = await connection.promise().query('INSERT INTO faculty (name, email, password, ...) VALUES (?, ?, ?, ...)', [name, email, password, ...otherDetails]);
+
+        const newFaculty = { id: result.insertId, name, email, password, ...otherDetails }; // Include the newly created ID
+        res.status(201).json(newFaculty);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 };
 
 exports.updateFaculty = async (req, res) => {
-  try {
-    const updatedFaculty = await Faculty.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedFaculty) {
-      return res.status(404).json({ message: 'Faculty member not found' });
+    try {
+        const { name, email, password, ...otherDetails } = req.body; // Destructure to get the necessary fields
+        const [result] = await connection.promise().query('UPDATE faculty SET name = ?, email = ?, password = ?, ... WHERE id = ?', [name, email, password, ...otherDetails, req.params.id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Faculty member not found' });
+        }
+
+        res.json({ message: "Faculty member updated successfully" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
-    res.json(updatedFaculty);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
 };
 
 exports.deleteFaculty = async (req, res) => {
-  try {
-    const faculty = await Faculty.findOne({ email: req.params.email });
+    try {
+        const [result] = await connection.promise().query('DELETE FROM faculty WHERE email = ?', [req.params.email]);
 
-    if (!faculty) {
-      return res.status(404).json({ message: "Faculty not found" });
-    }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Faculty not found" });
+        }
 
-    const deletedFaculty = await Faculty.findByIdAndDelete(faculty._id);
-    if (!deletedFaculty) {
-      return res.status(404).json({ message: 'Faculty member not found' });
+        res.json({ message: 'Faculty member deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    res.json({ message: 'Faculty member deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
