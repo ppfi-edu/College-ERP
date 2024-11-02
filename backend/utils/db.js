@@ -1,17 +1,27 @@
 const mysql = require('mysql2/promise');
 
 const connectDB = async () => {
-    const connection = await mysql.createConnection({
+    const connectDB = await mysql.createConnection({
         host: 'localhost',
         user: 'root',
-        password: 'tanisha1709',
-        database: 'dbms'
+        password: 'Mohit@9893',
+        database: 'dbsystem',
     });
 
     console.log('MySQL connected successfully');
 
+    // Create Course table first since Faculty and Student reference it
+    const createCourse = `
+        CREATE TABLE IF NOT EXISTS Course (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            course_name VARCHAR(255) NOT NULL,
+            course_code VARCHAR(100) NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `;
+
     // Create Admin table
-    const createAdminTable = `
+    const createAdmin = `
         CREATE TABLE IF NOT EXISTS Admin (
             id INT AUTO_INCREMENT PRIMARY KEY,
             username VARCHAR(255) NOT NULL UNIQUE,
@@ -36,7 +46,7 @@ const connectDB = async () => {
     `;
 
     // Create Student table
-    const createStudentTable = `
+    const createStudent = `
         CREATE TABLE IF NOT EXISTS Student (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -48,18 +58,8 @@ const connectDB = async () => {
         )
     `;
 
-    // Create Course table
-    const createCourseTable = `
-        CREATE TABLE IF NOT EXISTS Course (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            course_name VARCHAR(255) NOT NULL,
-            course_code VARCHAR(100) NOT NULL UNIQUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    `;
-
     // Create Attendance table
-    const createAttendanceTable = `
+    const createAttendance = `
         CREATE TABLE IF NOT EXISTS Attendance (
             id INT AUTO_INCREMENT PRIMARY KEY,
             student_id INT,
@@ -70,7 +70,7 @@ const connectDB = async () => {
     `;
 
     // Create Notice table
-    const createNoticeTable = `
+    const createNotice = `
         CREATE TABLE IF NOT EXISTS Notice (
             id INT AUTO_INCREMENT PRIMARY KEY,
             noticeNumber INT NOT NULL,
@@ -79,30 +79,30 @@ const connectDB = async () => {
         )
     `;
 
-    // Execute the create table queries
+    // Execute the create table queries in the correct order
     try {
-        await connection.query(createAdminTable);
+        await connectDB.query(createCourse);
+        console.log('Course table created or verified successfully.');
+        
+        await connectDB.query(createAdmin);
         console.log('Admin table created or verified successfully.');
         
-        await connection.query(createFaculty);
+        await connectDB.query(createFaculty);
         console.log('Faculty table created or verified successfully.');
         
-        await connection.query(createStudentTable);
+        await connectDB.query(createStudent);
         console.log('Student table created or verified successfully.');
-        
-        await connection.query(createCourseTable);
-        console.log('Course table created or verified successfully.');
 
-        await connection.query(createAttendanceTable);
+        await connectDB.query(createAttendance);
         console.log('Attendance table created or verified successfully.');
 
-        await connection.query(createNoticeTable);
+        await connectDB.query(createNotice);
         console.log('Notice table created or verified successfully.');
     } catch (err) {
         console.error('Error creating tables:', err.message);
     }
 
-    return connection; // Return the connection for further queries
+    return connectDB; // Return the connection for further queries
 };
 
 module.exports = connectDB;
