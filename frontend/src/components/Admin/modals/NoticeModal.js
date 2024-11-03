@@ -124,13 +124,13 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
                                     >
                                         <Row className="w-100">
                                             <Col xs={6} className="p-4">
-                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>{notice.noticeDescription}</p>
+                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>{notice.noticedescription}</p>
                                             </Col>
 
                                             <Col xs={4} className="p-4">
-                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notice.noticeDate}</p>
+                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notice.noticedate}</p>
                                             </Col>
-                                            <Col xs={2} className="px-2 pt-4" data-mdb-tooltip-init title="Delete Notice" onClick={() => handleDeleteNotice(notice._id)}>
+                                            <Col xs={2} className="px-2 pt-4" data-mdb-tooltip-init title="Delete Notice" onClick={() => handleDeleteNotice(notice.id)}>
                                                 <i className="bi bi-trash3-fill"></i>
                                             </Col>
                                         </Row>

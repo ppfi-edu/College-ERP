@@ -49,14 +49,16 @@ CREATE TABLE IF NOT EXISTS Faculty (
 const createStudent = `
 CREATE TABLE IF NOT EXISTS Student (
     id SERIAL PRIMARY KEY,
+    student_id VARCHAR(20) UNIQUE, -- New field for the formatted ID
     name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    course_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (course_id) REFERENCES Course(id) ON DELETE SET NULL
-)
-`;
+    course_id VARCHAR(255)[], -- Changed to VARCHAR array
+    enrollment_year INT NOT NULL, -- New field for enrollment year
+    branch VARCHAR(10) NOT NULL, -- New field for branch (e.g., CSE, ECE)
+    roll_number INT NOT NULL, -- Field to store the unique roll number within the branch and year
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`;
 
 const createAttendanceStatusType = `
 DO $$
@@ -96,6 +98,15 @@ CREATE TABLE IF NOT EXISTS Events (
 )
 `;
 
+const createFee = `CREATE TABLE IF NOT EXISTS Fee (
+    id SERIAL PRIMARY KEY,
+    student_id VARCHAR(20) REFERENCES Student(student_id) ON DELETE CASCADE,
+    reason VARCHAR(255) NOT NULL, -- Reason for the fee (e.g., tuition, library, etc.)
+    amount DECIMAL(10, 2) NOT NULL, -- Amount of the fee
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`
+
+
 
 // const connectDB = async () => {
 //     let client;
@@ -115,7 +126,7 @@ export const connectDB = async () => {
         const client = await pool.connect();
         // Test a connection to ensure the pool is working
         const ans = await client.query('SELECT NOW()'); // Simple query to check connection
-        console.log('PostgreSQL connected successfully', ans);
+        console.log('PostgreSQL connected successfully');
         return client;
     } catch (err) {
         console.error('Error connecting to the database:', err.message);

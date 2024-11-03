@@ -21,6 +21,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import noticeRoutes from './routes/noticeRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventsRoutes.js';
+import feeRoutes from './routes/feeRoutes.js';
 
 // Mounting routes
 app.use('/api/students', studentRoutes);
@@ -30,6 +31,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/notice', noticeRoutes);
 app.use('/api/login', authRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/fee', feeRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -30,18 +30,36 @@ export const getStudentById = async (req, res) => {
 export const createStudent = async (req, res) => {
     const client = await connectDB();
     try {
-        const { name, password, email, course } = req.body;
+        const { name, password, email, courses, enrollmentYear, branch } = req.body;
+
+        // Generate student_id in the format BT22CSE214
+        const rollNumber = Math.floor(100 + Math.random() * 900); // Generates a 3-digit roll number
+        const student_id = `BT${enrollmentYear}${branch}${rollNumber}`;
+
+        console.log("DEBUG: Generated student_id:", student_id);
+        console.log("DEBUG: Received request data:", { name, email, courses, enrollmentYear, branch });
+
         const { rows } = await client.query(
-            'INSERT INTO students (name, password, email, course) VALUES ($1, $2, $3, $4) RETURNING id',
-            [name, password, email, course]
+            `INSERT INTO Student 
+                (student_id, name, password, email, course_id, enrollment_year, branch, roll_number, created_at) 
+             VALUES 
+                ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP) 
+             RETURNING student_id`,
+            [student_id, name, password, email, courses, enrollmentYear, branch, rollNumber]
         );
-        res.status(201).json({ message: "Student created successfully", id: rows[0].id });
+
+        console.log("DEBUG: Insert query result:", rows);
+
+        res.status(201).json({ message: "Student created successfully", student_id: rows[0].student_id });
     } catch (error) {
+        console.error("DEBUG: Error during student creation:", error);
         res.status(400).json({ error: error.message });
     } finally {
         client.release();
+        console.log("DEBUG: Database client released.");
     }
 };
+
 
 export const updateStudent = async (req, res) => {
     const client = await connectDB();
