@@ -80,7 +80,16 @@ CREATE TABLE IF NOT EXISTS Notice (
     noticeDate DATE NOT NULL
 )
 `;
-
+const createEvents=`
+CREATE TABLE IF NOT EXISTS Events (
+    id SERIAL PRIMARY KEY,
+    eventNumber INT ,
+    eventDescription TEXT ,
+    eventDate DATE NOT NULL,
+    eventImage BYTEA, 
+    eventVideo BYTEA  
+)
+`;
 
 
 const connectDB = async () => {
@@ -113,7 +122,7 @@ const createTables = async () => {
         console.log('Course table created or verified successfully.');
 
         await client.query(createAdmin);
-        // console.log('Admin table created or verified successfully.');
+         console.log('Admin table created or verified successfully.');
 
         await client.query(createFaculty);
         console.log('Faculty table created or verified successfully.');
@@ -129,6 +138,9 @@ const createTables = async () => {
 
         await client.query(createNotice);
         console.log('Notice table created or verified successfully.');
+
+        await client.query(createEvents);
+        console.log('Events table created or verified successfully.');
     } catch (err) {
         console.error('Error creating tables:', err.message);
     } finally {

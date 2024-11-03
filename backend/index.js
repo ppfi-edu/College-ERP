@@ -16,6 +16,7 @@ const facultyRoutes = require('./routes/facultyRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const noticeRoutes = require('./routes/noticeRoutes');
 const authRoutes = require('./routes/authRoutes');
+const eventRoutes = require('./routes/eventsRoutes');
 
 // Mounting routes
 app.use('/api/students', studentRoutes);
@@ -24,6 +25,7 @@ app.use('/api/faculty', facultyRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notice', noticeRoutes);
 app.use('/api/login', authRoutes);
+app.use('/api/events', eventRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
