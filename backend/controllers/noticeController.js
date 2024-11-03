@@ -1,45 +1,52 @@
 const connectDB = require("../utils/db");
 
 exports.getAllNotice = async (req, res) => {
-    let connection;
+    let client;
     try {
-        connection = await connectDB();
-        const [notices] = await connection.promise().query('SELECT * FROM notice');
+        client = await connectDB(); // Establish the connection
+        const { rows: notices } = await client.query('SELECT * FROM notice');
         if (notices.length === 0) {
             return res.status(404).json({ message: 'No notices found' });
         }
         res.json(notices);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    } finally {
+        if (client) client.release(); // Release the client back to the pool
     }
 };
 
 exports.addNotice = async (req, res) => {
-    let connection;
+    let client;
     try {
-        connection = await connectDB();
+        client = await connectDB(); // Establish the connection
         const { title, content, date, ...otherDetails } = req.body; // Adjust based on your notice fields
-        const [result] = await connection.promise().query(
-            'INSERT INTO notice (title, content, date, ...) VALUES (?, ?, ?, ...)', 
-            [title, content, date, ...otherDetails]
-        );
+
+        // Construct the SQL query dynamically to include additional fields
+        const columns = ['title', 'content', 'date', ...Object.keys(otherDetails)];
+        const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
+        const values = [title, content, date, ...Object.values(otherDetails)];
+
+        const { rows } = await client.query(`INSERT INTO notice (${columns.join(', ')}) VALUES (${placeholders}) RETURNING id`, values);
         
         res.status(201).json({
-            message: "Notice added Successfully",
-            id: result.insertId // Return the ID of the new notice
+            message: "Notice added successfully",
+            id: rows[0].id // Return the ID of the new notice
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    } finally {
+        if (client) client.release(); // Release the client back to the pool
     }
 };
 
 exports.deleteNotice = async (req, res) => {
-    let connection;
+    let client;
     try {
-        connection = await connectDB();
-        const [result] = await connection.promise().query('DELETE FROM notice WHERE id = ?', [req.params.id]);
+        client = await connectDB(); // Establish the connection
+        const { rowCount } = await client.query('DELETE FROM notice WHERE id = $1', [req.params.id]);
 
-        if (result.affectedRows === 0) {
+        if (rowCount === 0) {
             return res.status(404).json({ message: "Notice not found" });
         }
         
@@ -47,6 +54,8 @@ exports.deleteNotice = async (req, res) => {
             message: "Notice deleted successfully"
         });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
+    } finally {
+        if (client) client.release(); // Release the client back to the pool
     }
 };

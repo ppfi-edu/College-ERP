@@ -29,8 +29,8 @@ function App() {
   const LoggedIn = ({ element }) => {
     const isAuthenticated = localStorage.getItem('jwt');
     if (isAuthenticated) {
-      const isAdmin = JSON.parse(localStorage.getItem('isAdmin'));
-      const isStudent = JSON.parse(localStorage.getItem('isStudent'));
+      const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || false);
+      const isStudent = JSON.parse(localStorage.getItem('isStudent') || false);
       if (isAdmin) {
         return <Navigate to="/admin/dashboard" replace />;
       } else if (isStudent) {
@@ -46,8 +46,8 @@ function App() {
 
   const PrivateRoute = ({ element }) => {
     const isAuthenticated = localStorage.getItem('jwt');
-    const isAdmin = JSON.parse(localStorage.getItem('isAdmin'));
-    const isStudent = JSON.parse(localStorage.getItem('isStudent'));
+    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || false);
+    const isStudent = JSON.parse(localStorage.getItem('isStudent') || false);
 
     if (!isAuthenticated) {
       return <Unauthorised />;
