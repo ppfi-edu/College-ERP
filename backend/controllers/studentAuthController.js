@@ -1,18 +1,16 @@
-const connectDB = require('../utils/db');
-const jwt = require('jsonwebtoken');
+import { connectDB } from '../utils/db.js'; // Import your connectDB utility
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs'; // Import bcrypt for password hashing
 
-const secret = "secret";
+const secret = process.env.JWT_SECRET || "default_secret"; // Use an environment variable for the secret
 
-exports.studentLogin = async (req, res) => {
-    let client;
+export const studentLogin = async (req, res) => {
     const { email, password } = req.body;
-    
+
     console.log('Login attempt for email:', email); // Debug: Log the email being used to log in
 
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        client = await connectDB(); // Establish the connection
-        console.log('Database connection established.'); // Debug: Confirm DB connection
-
         // Fetch the student from the database using the provided email
         const { rows } = await client.query('SELECT * FROM Student WHERE email = $1', [email]);
         console.log('Query executed. Rows returned:', rows.length); // Debug: Log the number of rows returned
@@ -27,7 +25,8 @@ exports.studentLogin = async (req, res) => {
         console.log('Student found:', student); // Debug: Log the student information
 
         // Validate password
-        // const isValidPassword = student.password === password; // Note: Passwords should be hashed in production
+        // Uncomment and use this section if password hashing is implemented
+        // const isValidPassword = await bcrypt.compare(password, student.password); // Use bcrypt to compare hashed passwords
         // console.log('Password validation result:', isValidPassword); // Debug: Log password validation result
 
         // if (!isValidPassword) {
@@ -36,17 +35,16 @@ exports.studentLogin = async (req, res) => {
         // }
 
         // Generate JWT token
-        const token = jwt.sign({ id: student.id }, secret);
+        const token = jwt.sign({ id: student.id }, secret); // Set an expiration time for the token
         console.log('JWT token generated:', token); // Debug: Log the generated token
 
         res.json({ token, authenticated: true });
     } catch (error) {
         console.error('Error during student login:', error.message); // Debug: Log error message
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Internal Server Error' }); // Avoid exposing error details
     } finally {
-        if (client) {
-            client.release(); // Release the client back to the pool
-            console.log('Database connection released.'); // Debug: Confirm DB connection release
-        }
+        client.release(); // Release the client back to the pool
     }
 };
+
+

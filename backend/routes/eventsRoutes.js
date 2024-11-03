@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const eventsController = require('../controllers/eventsController');
+// const eventsController = require('../controllers/eventsController');
+import { getAllEventImages, uploadEvent } from '../controllers/eventsController.js';
 
-router.get('/', eventsController.getAllEventImages);
-router.post('/upload', eventsController.uploadEvent);
+router.get('/', getAllEventImages);
+router.post('/upload', uploadEvent);
 
 
-module.exports = router;
+// module.exports = router;
+export default router;

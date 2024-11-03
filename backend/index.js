@@ -1,22 +1,26 @@
-const express = require('express');
-const connectDB = require('./utils/db');
-const cors = require('cors')
+// const express = require('express');
+// const connectDB = require('./utils/db.js');
+// const cors = require('cors')
+
+import express from 'express';
+import {connectDB} from './utils/db.js';
+import cors from 'cors';
 
 const app = express();
-connectDB();
+// connectDB();
 const PORT = 5173
 
 app.use(express.json());
 app.use(cors({}))
 
-// Routes
-const studentRoutes = require('./routes/studentRoutes');
-const courseRoutes = require('./routes/courseRoutes');
-const facultyRoutes = require('./routes/facultyRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const noticeRoutes = require('./routes/noticeRoutes');
-const authRoutes = require('./routes/authRoutes');
-const eventRoutes = require('./routes/eventsRoutes');
+
+import studentRoutes from './routes/studentRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+import facultyRoutes from './routes/facultyRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import noticeRoutes from './routes/noticeRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import eventRoutes from './routes/eventsRoutes.js';
 
 // Mounting routes
 app.use('/api/students', studentRoutes);

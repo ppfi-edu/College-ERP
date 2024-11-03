@@ -1,22 +1,20 @@
-const connectDB = require('../utils/db');
+import connectDB  from '../utils/db.js'; // Import your connectDB utility
 
-exports.getAllStudents = async (req, res) => {
-    let client;
+export const getAllStudents = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        client = await connectDB(); // Establish the connection
         const { rows: students } = await client.query('SELECT * FROM students');
         res.json(students);
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release(); // Release the client back to the pool
     }
 };
 
-exports.getStudentById = async (req, res) => {
-    let client;
+export const getStudentById = async (req, res) => {
+    const client = await connectDB();
     try {
-        client = await connectDB(); // Establish the connection
         const { rows: students } = await client.query('SELECT * FROM students WHERE id = $1', [req.params.id]);
         if (students.length === 0) {
             return res.status(404).json({ message: "Student not found" });
@@ -25,30 +23,34 @@ exports.getStudentById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release();
     }
 };
 
-exports.createStudent = async (req, res) => {
-    let client;
+export const createStudent = async (req, res) => {
+    const client = await connectDB();
     try {
-        client = await connectDB(); // Establish the connection
         const { name, password, email, course } = req.body;
-        const { rows } = await client.query('INSERT INTO students (name, password, email, course) VALUES ($1, $2, $3, $4) RETURNING id', [name, password, email, course]);
+        const { rows } = await client.query(
+            'INSERT INTO students (name, password, email, course) VALUES ($1, $2, $3, $4) RETURNING id',
+            [name, password, email, course]
+        );
         res.status(201).json({ message: "Student created successfully", id: rows[0].id });
     } catch (error) {
         res.status(400).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release();
     }
 };
 
-exports.updateStudent = async (req, res) => {
-    let client;
+export const updateStudent = async (req, res) => {
+    const client = await connectDB();
     try {
-        client = await connectDB(); // Establish the connection
         const { name, password, email, course } = req.body; // Extract fields to be updated
-        const { rowCount } = await client.query('UPDATE students SET name = $1, password = $2, email = $3, course = $4 WHERE id = $5', [name, password, email, course, req.params.id]);
+        const { rowCount } = await client.query(
+            'UPDATE students SET name = $1, password = $2, email = $3, course = $4 WHERE id = $5',
+            [name, password, email, course, req.params.id]
+        );
         if (rowCount === 0) {
             return res.status(404).json({ message: "Student not found" });
         }
@@ -56,14 +58,13 @@ exports.updateStudent = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release();
     }
 };
 
-exports.deleteStudent = async (req, res) => {
-    let client;
+export const deleteStudent = async (req, res) => {
+    const client = await connectDB();
     try {
-        client = await connectDB(); // Establish the connection
         const { rowCount } = await client.query('DELETE FROM students WHERE email = $1', [req.params.email]);
         if (rowCount === 0) {
             return res.status(404).json({ message: "Student not found" });
@@ -72,15 +73,13 @@ exports.deleteStudent = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release();
     }
 };
 
-exports.updateAttendance = async (req, res) => {
-    let client;
+export const updateAttendance = async (req, res) => {
+    const client = await connectDB();
     try {
-        client = await connectDB(); // Establish the connection
-        
         const updates = req.body;
         if (!Array.isArray(updates)) {
             throw new Error('Updates must be an array');
@@ -95,14 +94,13 @@ exports.updateAttendance = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release();
     }
 };
 
-exports.totalAttendance = async (req, res) => {
-    let client;
+export const totalAttendance = async (req, res) => {
+    const client = await connectDB();
     try {
-        client = await connectDB(); // Establish the connection
         const { updatedCount } = req.body; // Assuming you are passing the count to update
         const { rowCount } = await client.query('UPDATE attendance SET count = $1 WHERE id = $2', [updatedCount, "662b3c2219a7f45154c025bb"]); // Adjust the id based on your context
         if (rowCount === 0) {
@@ -112,6 +110,6 @@ exports.totalAttendance = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        client.release();
     }
 };

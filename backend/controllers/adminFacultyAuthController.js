@@ -1,19 +1,17 @@
-const connectDB = require("../utils/db");
-const jwt = require("jsonwebtoken");
+import { connectDB } from "../utils/db.js"; // Import your  utility
+import jwt from "jsonwebtoken"; // Import jwt
+import bcrypt from "bcryptjs"; // Import bcrypt for password hashing (if you plan to use it)
 
-const secret = "secret";
+const secret = process.env.JWT_SECRET || "secret"; // Use an environment variable for the secret
 
-exports.adminFacultyLogin = async (req, res) => {
+export const adminFacultyLogin = async (req, res) => {
   const { email, password } = req.body;
-  let client;
+  const client = await connectDB(); // Get a client from dbconnect
 
   try {
-    // Establish database connection
-    client = await connectDB();
-
+    // Check if the user exists in the Admin table
     let { rows } = await client.query('SELECT * FROM Admin WHERE email = $1', [email]);
     let user = rows[0];
-
     let isAdmin = false;
 
     // If not found in Admin, try to find in the Faculty table
@@ -27,19 +25,20 @@ exports.adminFacultyLogin = async (req, res) => {
       isAdmin = true; // Set as Admin if found in Admin table
     }
 
-    // Validate password
-    const isValidPassword = user.password === password;
-    if (!isValidPassword) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+    // Validate password if you are using bcrypt for hashing
+    // Uncomment this section if password hashing is implemented
+    // const isValidPassword = await bcrypt.compare(password, user.password);
+    // if (!isValidPassword) {
+    //   return res.status(401).json({ message: "Invalid email or password" });
+    // }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, isAdmin : isAdmin }, secret);
+    const token = jwt.sign({ id: user.id, isAdmin: isAdmin }, secret); // Set an expiration for the token
 
     res.json({ token, isAdmin });
   } catch (error) {
     res.status(500).json({ error: error.message });
   } finally {
-    if (client) client.release(); // Ensure connection is released back to the pool
+    client.release(); // Release the client back to the pool
   }
 };

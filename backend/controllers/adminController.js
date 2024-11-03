@@ -1,9 +1,9 @@
-const connectDB = require('../utils/db'); // Ensure you have your PostgreSQL connection
+import { connectDB } from '../utils/db.js'; // Import your PostgreSQL connection
 
-exports.getAdminById = async (req, res) => {
+export const getAdminById = async (req, res) => {
   let client;
   try {
-    client = await connectDB();
+    client = await connectDB(); // Get a client from the pool
     const { rows } = await client.query('SELECT * FROM Admin WHERE id = $1', [req.params.id]);
     const admin = rows[0]; // Get the first row if it exists
     if (!admin) {
@@ -13,17 +13,17 @@ exports.getAdminById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   } finally {
-    client.release(); // Release the client back to the pool
+    if (client) {
+      client.release(); // Release the client back to the pool
+    }
   }
 };
 
-
-exports.createFaculty = async (req, res) => {
+export const createFaculty = async (req, res) => {
   let client;
   try {
-    client = await connectDB();
-
-    const { name, password, email, course_id, isAdmin } = req.body;
+    client = await connectDB(); // Get a client from the pool
+    const { name, password, email, course_id } = req.body;
 
     // Check if course_id exists in the Course table
     if (course_id) {
@@ -34,8 +34,8 @@ exports.createFaculty = async (req, res) => {
     }
 
     // Insert the faculty member
-    const sql = 'INSERT INTO Faculty (name, password, email, course_id, isAdmin) VALUES ($1, $2, $3, $4, $5) RETURNING id';
-    const { rows: result } = await client.query(sql, [name, password, email, course_id || null, isAdmin]);
+    const sql = 'INSERT INTO Faculty (name, password, email, course_id) VALUES ($1, $2, $3, $4) RETURNING id';
+    const { rows: result } = await client.query(sql, [name, password, email, course_id || null]);
 
     res.status(201).json({
       message: "Faculty Created Successfully",
@@ -45,18 +45,18 @@ exports.createFaculty = async (req, res) => {
     console.error('Database error:', err);
     res.status(400).json({ error: 'Failed to create faculty. ' + err.message });
   } finally {
-    client.release();
+    if (client) {
+      client.release(); // Release the client back to the pool
+    }
   }
 };
 
-
-exports.createStudent = async (req, res) => {
+export const createStudent = async (req, res) => {
   let client;
   try {
-    client = await connectDB();
-
+    client = await connectDB(); // Get a client from the pool
     const { name, password, email, course_id } = req.body;
-    
+
     // Insert the student
     const sql = 'INSERT INTO Student (name, password, email, course_id) VALUES ($1, $2, $3, $4) RETURNING id';
     const { rows: result } = await client.query(sql, [name, password, email, course_id]);
@@ -66,8 +66,11 @@ exports.createStudent = async (req, res) => {
       studentId: result[0].id, // Optional: return the new student ID
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Database error:', error);
+    res.status(400).json({ error: 'Failed to create student. ' + error.message });
   } finally {
-    client.release();
+    if (client) {
+      client.release(); // Release the client back to the pool
+    }
   }
 };

@@ -1,10 +1,12 @@
-const connectDB = require("../utils/db");
+import connectDB from "../utils/db.js"; // Import the pool directly
 
-exports.getAllNotice = async (req, res) => {
+export const getAllNotice = async (req, res) => {
     let client;
     try {
-        client = await connectDB(); // Establish the connection
+        client = await connectDB(); // Get a client from the pool
+        console.log("Fetching all notices");
         const { rows: notices } = await client.query('SELECT * FROM notice');
+        
         if (notices.length === 0) {
             return res.status(404).json({ message: 'No notices found' });
         }
@@ -12,14 +14,16 @@ exports.getAllNotice = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
 
-exports.addNotice = async (req, res) => {
+export const addNotice = async (req, res) => {
     let client;
     try {
-        client = await connectDB(); // Establish the connection
+        client = await connectDB(); // Get a client from the pool
         const { title, content, date, ...otherDetails } = req.body; // Adjust based on your notice fields
 
         // Construct the SQL query dynamically to include additional fields
@@ -36,14 +40,15 @@ exports.addNotice = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
 
-exports.deleteNotice = async (req, res) => {
-    let client;
+export const deleteNotice = async (req, res) => {
     try {
-        client = await connectDB(); // Establish the connection
+        let client = await connectDB(); // Get a client from the pool
         const { rowCount } = await client.query('DELETE FROM notice WHERE id = $1', [req.params.id]);
 
         if (rowCount === 0) {
@@ -56,6 +61,8 @@ exports.deleteNotice = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
-        if (client) client.release(); // Release the client back to the pool
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };

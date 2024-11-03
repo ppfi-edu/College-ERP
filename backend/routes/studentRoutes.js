@@ -1,6 +1,8 @@
-const express = require('express');
+// const express = require('express');
+import express from 'express';
 const router = express.Router();
-const studentController = require('../controllers/studentController');
+// const studentController = require('../controllers/studentController');
+import * as studentController from '../controllers/studentController.js';
 
 router.get('/', studentController.getAllStudents);
 router.get('/:id', studentController.getStudentById);
@@ -10,4 +12,5 @@ router.post('/total-attendance', studentController.totalAttendance);
 router.put('/:id', studentController.updateStudent);
 router.delete('/:email', studentController.deleteStudent);
 
-module.exports = router;
+// module.exports = router;
+export default router;

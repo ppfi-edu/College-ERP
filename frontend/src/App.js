@@ -27,10 +27,29 @@ import Unauthorised from './components/Unauthorised';
 
 function App() {
   const LoggedIn = ({ element }) => {
-    const isAuthenticated = localStorage.getItem('jwt');
+    const isAuthenticated = !!localStorage.getItem('jwt'); // Ensure it’s a boolean
+    console.log("=====================================");
+    console.log("auth : ", isAuthenticated);
+    console.log("type : ", typeof isAuthenticated);
+    
     if (isAuthenticated) {
-      const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || false);
-      const isStudent = JSON.parse(localStorage.getItem('isStudent') || false);
+      console.log("authenticating");
+      
+      // Safely retrieve and parse isAdmin
+      const adminValue = localStorage.getItem('isAdmin');
+      console.log("adminValue : ", adminValue);
+      const isAdmin = adminValue !== undefined ? adminValue : false; // Check for null
+      console.log("admin : ", isAdmin);
+      
+      // Safely retrieve and parse isStudent
+      const studentValue = localStorage.getItem('isStudent');
+      const isStudent = studentValue !== undefined ? studentValue : false; // Check for null
+      console.log("student : ", isStudent);
+      
+      console.log("+++++++++++++++++++++++++++++++++++++");
+      console.log("admin 2 : ", isAdmin);
+      console.log("student 2 : ", isStudent);
+      
       if (isAdmin) {
         return <Navigate to="/admin/dashboard" replace />;
       } else if (isStudent) {
@@ -43,27 +62,34 @@ function App() {
     }
   };
 
-
   const PrivateRoute = ({ element }) => {
-    const isAuthenticated = localStorage.getItem('jwt');
-    const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || false);
-    const isStudent = JSON.parse(localStorage.getItem('isStudent') || false);
+    const isAuthenticated = !!localStorage.getItem('jwt');
 
     if (!isAuthenticated) {
       return <Unauthorised />;
     }
-
+  
+    // Retrieve and parse isAdmin safely
+    const adminValue = localStorage.getItem('isAdmin');
+    const isAdmin = adminValue !== undefined ? adminValue : false; // Parse JSON safely
+  
+    // Retrieve and parse isStudent safely
+    const studentValue = localStorage.getItem('isStudent');
+    const isStudent = studentValue !== undefined ? studentValue : false; // Parse JSON safely
+  
+  
+    // Check the conditions based on the role and the current path
     if (isAdmin && window.location.pathname.startsWith('/admin')) {
-      return element;
+      return element; // Allow access to admin routes
     } else if (!isAdmin && !isStudent && window.location.pathname.startsWith('/faculty')) {
-      return element;
+      return element; // Allow access to faculty routes
     } else if (!isAdmin && isStudent && window.location.pathname.startsWith('/student')) {
-      return element;
+      return element; // Allow access to student routes
     } else {
-      return <Unauthorised />;
+      return <Unauthorised />; // Deny access to other routes
     }
   };
-
+  
 
   return (
     <Router>

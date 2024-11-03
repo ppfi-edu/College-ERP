@@ -1,7 +1,9 @@
-const cloudinary = require('../utils/cloudinary'); // Ensure Cloudinary is configured
-const connectDB = require("../utils/db");
+//  cloudinary = require('../utils/cloudinary'); // Ensure Cloudinary is configured
+import cloudinary from 'cloudinary';
+// const connectDB = require("../utils/db");
+import { connectDB } from '../utils/db.js';
 
-const uploadEvent = async (req, res) => {
+export const uploadEvent = async (req, res) => {
   let client;
   try {
     // Connect to the database
@@ -69,7 +71,7 @@ const uploadEvent = async (req, res) => {
   }
 };
 
-const getAllEventImages = async (req, res) => {
+export const getAllEventImages = async (req, res) => {
     let client;
   
     try {
@@ -104,7 +106,4 @@ const getAllEventImages = async (req, res) => {
   };
 
 
-module.exports = {
-  uploadEvent,
-  getAllEventImages
-};
+

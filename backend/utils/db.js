@@ -1,9 +1,14 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+import dotenv from 'dotenv';
+import  pg from 'pg';
+dotenv.config();
+
+
+const {Pool} = pg;
+
 
 console.log(process.env.POSTGRES_URL);
 
-const pool = new Pool({
+export const pool = new Pool({
     connectionString: process.env.POSTGRES_URL,
     ssl: {
         rejectUnauthorized: false
@@ -92,23 +97,29 @@ CREATE TABLE IF NOT EXISTS Events (
 `;
 
 
-const connectDB = async () => {
-    let client;
+// const connectDB = async () => {
+//     let client;
+//     try {
+//         client = await pool.connect();
+//         console.log('PostgreSQL connected successfully');
+//     } catch (err) {
+//         console.error('Error connecting to the database:', err.message);
+//     }
+//     return client;
+// };
+
+
+// Function to log the connection status
+export const connectDB = async () => {
     try {
-        client = await pool.connect();
-        console.log('PostgreSQL connected successfully');
+        const client = await pool.connect();
+        // Test a connection to ensure the pool is working
+        const ans = await client.query('SELECT NOW()'); // Simple query to check connection
+        console.log('PostgreSQL connected successfully', ans);
+        return client;
     } catch (err) {
         console.error('Error connecting to the database:', err.message);
-    }
-    return client;
-};
-
-const disconnectDB = async () => {
-    try {
-        await pool.end();
-        console.log('PostgreSQL disconnected successfully');
-    } catch (err) {
-        console.error('Error disconnecting from the database:', err.message);
+        return null;
     }
 };
 
@@ -150,7 +161,9 @@ const createTables = async () => {
     }
 };
 
+
+// connectDB();
 // Call createTables when the backend starts
 // createTables();
 
-module.exports = connectDB;
+export default connectDB;
