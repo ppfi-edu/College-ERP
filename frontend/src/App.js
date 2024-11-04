@@ -10,6 +10,7 @@ import ManageStudents from './components/Admin/ManageStudents';
 import ManageFaculty from './components/Admin/ManageFaculty';
 import ManageCourse from './components/Admin/ManageCourse';
 import AdminHelpAndSupport from './components/AdminHelpAndSupport';
+import FeeManagementSystem from './components/Admin/feeDashboard';
 
 
 import FacultyDashboard from './components/Faculty/FacultyDashboard';
@@ -119,6 +120,10 @@ function App() {
         <Route
           path='/admin/dashboard/manage-faculty'
           element={<PrivateRoute element={<ManageFaculty />} />}
+        />
+        <Route
+          path='/admin/dashboard/manage-fee'
+          element={<PrivateRoute element={<FeeManagementSystem />} />}
         />
         <Route
           path='/admin/dashboard/manage-courses'
