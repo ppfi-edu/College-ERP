@@ -89,10 +89,10 @@ export const addFeeforAll = async (req, res) => {
 export const updateFeebyId = async (req, res) => {
     const client = await connectDB();
     try {
-        const { reason, amount } = req.body; // Extract fields to be updated
+        const { reason, amount, id } = req.body; // Extract fields to be updated
         const { rowCount } = await client.query(
-            'UPDATE Fee SET reason = $1, amount = $2 WHERE student_id = $3',
-            [reason, amount, req.params.student_id]
+            'UPDATE Fee SET reason = $1, amount = $2 WHERE id = $3',
+            [reason, amount, id]
         );
         if (rowCount === 0) {
             return res.status(404).json({ message: "Fee not found" });
@@ -107,9 +107,10 @@ export const updateFeebyId = async (req, res) => {
 
 
 export const deleteFeeById = async (req, res) => {
+    console.log("DEBUG: Deleting fee with ID:", req.params.id);
     const client = await connectDB();
     try {
-        const { rowCount } = await client.query('DELETE FROM Fee WHERE student_id = $1', [req.params.student_id]);
+        const { rowCount } = await client.query('DELETE FROM Fee WHERE id = $1', [req.params.id]);
         if (rowCount === 0) {
             return res.status(404).json({ message: "Fee not found" });
         }
