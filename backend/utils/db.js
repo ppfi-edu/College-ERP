@@ -106,6 +106,19 @@ const createFee = `CREATE TABLE IF NOT EXISTS Fee (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`
 
+const createLibrary = `CREATE TABLE IF NOT EXISTS Library (
+    id SERIAL PRIMARY KEY,
+    book_name VARCHAR(255) NOT NULL,
+    book_id VARCHAR(255) NOT NULL UNIQUE,
+    topic VARCHAR(255) NOT NULL,
+    author_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    issued BOOLEAN DEFAULT FALSE,
+    issued_to VARCHAR(255),
+    issued_date DATE,
+    issued_return_date DATE,
+);`
+
 
 
 // const connectDB = async () => {

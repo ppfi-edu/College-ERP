@@ -121,3 +121,18 @@ export const deleteFeeById = async (req, res) => {
     }
 }
 
+export const Getfeetilldate = async (req, res) => {
+    const client = await connectDB();
+    try {
+        const { rows: students } = await client.query('SELECT * FROM Fee WHERE created_at <= $1', [req.params.created_at]);
+        if (students.length === 0) {
+            return res.status(404).json({ message: "Fee not found" });
+        }
+        res.json(students);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+}
+
