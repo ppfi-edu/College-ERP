@@ -3,7 +3,7 @@ import connectDB  from '../utils/db.js'; // Import your connectDB utility
 export const getAllStudents = async (req, res) => {
     const client = await connectDB(); // Get a client from connectDB
     try {
-        const { rows: students } = await client.query('SELECT * FROM students');
+        const { rows: students } = await client.query('SELECT * FROM Student');
         res.json(students);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -15,7 +15,7 @@ export const getAllStudents = async (req, res) => {
 export const getStudentById = async (req, res) => {
     const client = await connectDB();
     try {
-        const { rows: students } = await client.query('SELECT * FROM students WHERE id = $1', [req.params.id]);
+        const { rows: students } = await client.query('SELECT * FROM Student WHERE id = $1', [req.params.id]);
         if (students.length === 0) {
             return res.status(404).json({ message: "Student not found" });
         }
@@ -83,7 +83,7 @@ export const updateStudent = async (req, res) => {
 export const deleteStudent = async (req, res) => {
     const client = await connectDB();
     try {
-        const { rowCount } = await client.query('DELETE FROM students WHERE email = $1', [req.params.email]);
+        const { rowCount } = await client.query('DELETE FROM Student WHERE email = $1', [req.params.email]);
         if (rowCount === 0) {
             return res.status(404).json({ message: "Student not found" });
         }
@@ -104,7 +104,7 @@ export const updateAttendance = async (req, res) => {
         }
 
         const bulkOperations = updates.map(update => {
-            return client.query('UPDATE students SET attendance = attendance + $1 WHERE id = $2', [update.attendanceCount, update.studentId]);
+            return client.query('UPDATE Student SET attendance = attendance + $1 WHERE id = $2', [update.attendanceCount, update.studentId]);
         });
 
         await Promise.all(bulkOperations);

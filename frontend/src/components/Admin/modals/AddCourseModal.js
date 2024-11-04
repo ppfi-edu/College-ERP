@@ -3,11 +3,16 @@ import { Button, Form, Modal, Spinner } from 'react-bootstrap';
 
 function AddCourseModal({ show, handleClose, setMessage, handleShowToast }) {
     const [validated, setValidated] = useState(false);
-    const [name, setName] = useState('');
+    const [name, setName] = useState(''); // Separate state for 'name'
+    const [code, setCode] = useState(''); // Separate state for 'code'
     const [loading, setLoading] = useState(false);
 
     const handleNameChange = (e) => {
         setName(e.target.value);
+    };
+
+    const handleCodeChange = (e) => {
+        setCode(e.target.value);
     };
 
     const handleSubmit = async (event) => {
@@ -22,13 +27,15 @@ function AddCourseModal({ show, handleClose, setMessage, handleShowToast }) {
 
         setValidated(true);
         setLoading(true);
+
         const response = await fetch("http://localhost:5173/api/courses/", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name })
+            body: JSON.stringify({ course_name :  name, course_code :  code }) // Now both name and code are being sent
         });
+
         setLoading(false);
 
         if (!response.ok) {
@@ -63,6 +70,19 @@ function AddCourseModal({ show, handleClose, setMessage, handleShowToast }) {
                         />
                         <Form.Control.Feedback type="invalid">
                             Please provide a valid course name.
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                    <Form.Group controlId="formBasicCode"> {/* Updated controlId */}
+                        <Form.Label>Course Code</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter course code" 
+                            required
+                            value={code}
+                            onChange={handleCodeChange} // Corrected handler
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            Please provide a valid course code.
                         </Form.Control.Feedback>
                     </Form.Group>
                 </Modal.Body>

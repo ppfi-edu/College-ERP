@@ -161,34 +161,37 @@ function ManageStudentsBody() {
                         </div>
                         <hr className="text-black m-0" />
                         <div className="scrollable-container" style={{ height: '160px', overflowY: 'auto' }}>
-                            {filteredStudents
-                                .sort((a, b) => a.email.localeCompare(b.email))
-                                .map(student => (
-                                    <div
-                                        className='d-flex bg-hover-div'
-                                        key={student.id}
-                                        role='button'
-                                        onClick={() => handleShowUpdateStudentModal(student)}
-                                    >
-                                        <Row className="w-100">
-                                            <Col xs={3} className="p-4">
-                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.name}</p>
-                                            </Col>
+                        {filteredStudents
+                         .sort((a, b) => a.email.localeCompare(b.email))
+                        .map(student => (
+                            <div
+                                className='d-flex bg-hover-div'
+                                key={student.id}
+                                role='button'
+                                onClick={() => handleShowUpdateStudentModal(student)}
+                            >
+                                <Row className="w-100">
+                                    <Col xs={3} className="p-4">
+                                        <p className="px-3 mb-0 fw-bold" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.name}</p>
+                                    </Col>
 
-                                            <Col xs={3} className="p-4">
-                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.course.name}</p>
-                                            </Col>
-                                            <Col xs={4} className="pt-3">
-                                                <p className="mb-0 text-muted overflow-auto">{student.email}</p>
-                                            </Col>
-                                            <Col xs={2} className="px-4 pt-4 ">
-                                                <i className="bi bi-pencil-square"> Edit</i>
-                                            </Col>
-                                        </Row>
+                                    <Col xs={3} className="p-4">
+                                        <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.courseName || "N/A"}</p> {/* Safe access */}
+                                    </Col>
 
-                                    </div>
-                                ))}
-                        </div>
+                                    <Col xs={4} className="pt-3">
+                                        <p className="mb-0 text-muted overflow-auto">{student.email}</p>
+                                    </Col>
+
+                                    <Col xs={2} className="px-4 pt-4 ">
+                                        <i className="bi bi-pencil-square"> Edit</i>
+                                    </Col>
+                                </Row>
+                            </div>
+                        ))
+                    }
+
+                     </div>
                     </div>
                 </div >
                 <AddStudentModal show={showAddStudentModal} handleClose={handleCloseAddStudentModal} setMessage={setMessage} handleShowToast={handleShowToast} />

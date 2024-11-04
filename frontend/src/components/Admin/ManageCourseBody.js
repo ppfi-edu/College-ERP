@@ -67,9 +67,12 @@ function ManageCoursesBody() {
     }, [modalUpdated]);
 
     useEffect(() => {
-        const filtered = courses.filter(course => course.name.includes(searchName));
+        const filtered = courses.filter(course => 
+            course.name && course.name.toLowerCase().includes(searchName.toLowerCase())
+        );
         setFilteredCourses(filtered);
     }, [searchName, courses]);
+    
 
     return (
         <div className="d-flex justify-content-center">

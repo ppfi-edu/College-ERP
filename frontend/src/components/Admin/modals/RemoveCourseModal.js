@@ -81,7 +81,7 @@ function RemoveCourseModal({ show, handleClose, setMessage, handleShowToast }) {
                         >
                             <option value="">Select a course...</option>
                             {courses.map(course => (
-                                <option key={course.id} value={course.name}>{course.name}</option>
+                                <option key={course.id} value={course.course_name}>{course.course_name}</option>
                             ))}
                         </Form.Select>
                         <Form.Control.Feedback type="invalid">
