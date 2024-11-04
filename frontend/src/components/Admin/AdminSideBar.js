@@ -20,6 +20,7 @@ const Sidebar = () => {
     }
   }, []);
 
+
   const fetchAdminData = async (id) => {
     try {
       const response = await fetch(`http://localhost:5173/api/admin/${id}`);

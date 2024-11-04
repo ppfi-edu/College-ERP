@@ -1,56 +1,67 @@
-const connectDB = require("../utils/db");
+import connectDB from "../utils/db.js"; // Import the pool directly
 
-exports.getAllCourses = async (req, res) => {
-    let connection;
+export const getAllCourses = async (req, res) => {
+    let client;
     try {
-        connection = await connectDB(); // Establish the connection
-        const [courses] = await connection.promise().query('SELECT * FROM course');
+        client = await connectDB(); // Get a client from the pool
+        const { rows: courses } = await client.query('SELECT * FROM course'); // Use client.query() directly
         res.json(courses);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    } finally {
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
 
-exports.getCourseById = async (req, res) => {
-    let connection;
+export const getCourseById = async (req, res) => {
+    let client;
     try {
-        connection = await connectDB(); // Establish the connection
-        const [course] = await connection.promise().query('SELECT * FROM course WHERE id = ?', [req.params.id]);
+        client = await connectDB(); // Get a client from the pool
+        const { rows: course } = await client.query('SELECT * FROM course WHERE id = $1', [req.params.id]);
+        
         if (course.length === 0) {
             return res.status(404).json({ message: "Course not found" });
         }
         res.json(course[0]); // Return the first course object
     } catch (error) {
         res.status(500).json({ error: error.message });
+    } finally {
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
 
-exports.createCourse = async (req, res) => {
-    let connection;
+export const createCourse = async (req, res) => {
+    let client;
     try {
-        connection = await connectDB(); // Establish the connection
-
+        client = await connectDB(); // Get a client from the pool
         const { name } = req.body; // Assuming name is the only required field
-        const [result] = await connection.promise().query('INSERT INTO course (name) VALUES (?)', [name]);
-        
+        const { rows } = await client.query('INSERT INTO course (name) VALUES ($1) RETURNING id', [name]);
+
         res.status(201).json({
             message: "Course created successfully",
-            courseId: result.insertId, // Return the ID of the created course
+            courseId: rows[0].id, // Return the ID of the created course
         });
     } catch (error) {
         res.status(400).json({ error: error.message });
+    } finally {
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
 
-exports.updateCourse = async (req, res) => {
-    let connection;
+export const updateCourse = async (req, res) => {
+    let client;
     try {
-        connection = await connectDB(); // Establish the connection
-
+        client = await connectDB(); // Get a client from the pool
         const { name } = req.body; // Assuming name is the only field being updated
-        const [result] = await connection.promise().query('UPDATE course SET name = ? WHERE id = ?', [name, req.params.id]);
-        
-        if (result.affectedRows === 0) {
+        const { rowCount } = await client.query('UPDATE course SET name = $1 WHERE id = $2', [name, req.params.id]);
+
+        if (rowCount === 0) {
             return res.status(404).json({ message: "Course not found" });
         }
 
@@ -59,22 +70,29 @@ exports.updateCourse = async (req, res) => {
         });
     } catch (error) {
         res.status(400).json({ error: error.message });
+    } finally {
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
 
-exports.deleteCourse = async (req, res) => {
-    let connection;
+export const deleteCourse = async (req, res) => {
+    let client;
     try {
-        connection = await connectDB(); // Establish the connection
+        client = await connectDB(); // Get a client from the pool
+        const { rowCount } = await client.query('DELETE FROM course WHERE id = $1', [req.params.id]);
 
-        const [result] = await connection.promise().query('DELETE FROM course WHERE name = ?', [req.params.name]);
-
-        if (result.affectedRows === 0) {
+        if (rowCount === 0) {
             return res.status(404).json({ message: "Course not found" });
         }
 
         res.json({ message: "Course deleted successfully" });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    } finally {
+        if (client) {
+            client.release(); // Release the client back to the pool
+        }
     }
 };
