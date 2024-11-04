@@ -33,7 +33,7 @@ export default function FeeManagementSystem() {
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`/${searchTerm}`)
+      const response = await fetch(`api/fee/${searchTerm}`)
       if (!response.ok) throw new Error('Failed to fetch fee')
       const data = await response.json()
       setFees([data])
@@ -91,75 +91,78 @@ export default function FeeManagementSystem() {
   }
 
   return (
-    <Container className="mt-4">
-      <h1 className="mb-4">College Fee Management System</h1>
-      
-      {alert.show && (
-        <Alert variant={alert.variant}>
-          {alert.message}
-        </Alert>
-      )}
+    <div className="d-flex">
+    <Sidebar />
+    <div className="flex-grow-1">
+      <Container className="mt-4">
+        <h1 className="mb-4">College Fee Management System</h1>
+        
+        {alert.show && (
+          <Alert variant={alert.variant}>
+            {alert.message}
+          </Alert>
+        )}
 
-      <Card className="mb-4">
-        <Card.Header>Search Fee</Card.Header>
-        <Card.Body>
-          <Form className="d-flex">
-            <Form.Control 
-              type="text"
-              placeholder="Enter student ID or email" 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="me-2"
-            />
-            <Button variant="primary" onClick={handleSearch}>Search</Button>
-          </Form>
-        </Card.Body>
-      </Card>
+        <Card className="mb-4">
+          <Card.Header>Search Fee</Card.Header>
+          <Card.Body>
+            <Form className="d-flex">
+              <Form.Control 
+                type="text"
+                placeholder="Enter student ID or email" 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="me-2"
+              />
+              <Button variant="primary" onClick={handleSearch}>Search</Button>
+            </Form>
+          </Card.Body>
+        </Card>
 
-      <Card className="mb-4">
-        <Card.Header>Create/Update Fee</Card.Header>
-        <Card.Body>
-          <Form onSubmit={handleCreateOrUpdateFee}>
-            <Row className="align-items-end">
-              <Col>
-                <Form.Group>
-                  <Form.Label>Student ID</Form.Label>
-                  <Form.Control 
-                    type="text"
-                    value={studentId} 
-                    onChange={(e) => setStudentId(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Amount</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    value={amount} 
-                    onChange={(e) => setAmount(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Button type="submit" variant="primary">
-                  {studentId ? 'Update' : 'Create'} Fee
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </Card.Body>
-      </Card>
+        <Card className="mb-4">
+          <Card.Header>Create/Update Fee</Card.Header>
+          <Card.Body>
+            <Form onSubmit={handleCreateOrUpdateFee}>
+              <Row className="align-items-end">
+                <Col>
+                  <Form.Group>
+                    <Form.Label>Student ID</Form.Label>
+                    <Form.Control 
+                      type="text"
+                      value={studentId} 
+                      onChange={(e) => setStudentId(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group>
+                    <Form.Label>Amount</Form.Label>
+                    <Form.Control 
+                      type="number" 
+                      value={amount} 
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Button type="submit" variant="primary">
+                    {studentId ? 'Update' : 'Create'} Fee
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+          </Card.Body>
+        </Card>
 
-      <Card className="mb-4">
-        <Card.Header>Add Fee for all students</Card.Header>
-        <Card.Body>
-          <Form onSubmit={handleCreateOrUpdateFee}>
-            <Row className="align-items-end">
-              <Col>
-                <Form.Group>
-                  <Form.Label>Reason</Form.Label>
-                  <Form.Control 
+       <Card className="mb-4">
+         <Card.Header>Add Fee for all students</Card.Header>
+         <Card.Body>
+           <Form onSubmit={handleCreateOrUpdateFee}>
+             <Row className="align-items-end">
+               <Col>
+                 <Form.Group>
+                   <Form.Label>Reason</Form.Label>
+                   <Form.Control 
                     type="text"
                     value={reason} 
                     onChange={(e) => setReason(e.target.value)}
@@ -185,10 +188,6 @@ export default function FeeManagementSystem() {
           </Form>
         </Card.Body>
       </Card>
-
-      <Button variant="secondary" onClick={handleAddFeeForAll} className="mb-4">
-        Add Fee for All Students
-      </Button>
 
       <Table striped bordered hover>
         <thead>
@@ -218,6 +217,8 @@ export default function FeeManagementSystem() {
           ))}
         </tbody>
       </Table>
-    </Container>
-  )
+      </Container>
+    </div>
+  </div>
+)
 }
