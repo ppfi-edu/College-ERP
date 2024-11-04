@@ -146,7 +146,7 @@ function ManageCoursesBody() {
                                 .map(course => (
                                     <div
                                         className='d-flex bg-hover-div'
-                                        key={course._id}
+                                        key={course.id}
                                         role='button'
                                         onClick={() => handleShowUpdateCourseModal(course)}
                                     >

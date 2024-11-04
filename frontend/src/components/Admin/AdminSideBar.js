@@ -85,6 +85,12 @@ const Sidebar = () => {
               <span className="fs-5">Manage Course</span>
             </Link>
           </li>
+          <li className="nav-item p-1">
+            <Link to="/admin/dashboard/manage-fee" className="nav-link text-black">
+              <i className="bi bi-book me-2 fs-5"></i>
+              <span className="fs-5">Manage Fees</span>
+            </Link>
+          </li>
 
           <li className="nav-item p-1">
             <Link to="/admin/help-support" className="nav-link text-black">
