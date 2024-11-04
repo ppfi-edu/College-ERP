@@ -1,73 +1,99 @@
-const connectDB = require("../utils/db");
+import connectDB  from "../utils/db.js"; // Import your connectDB utility
 
-exports.getAllFaculty = async (req, res) => {
-    let connection;
+export const getAllFaculty = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        connection = await connectDB();
-        const [faculty] = await connection.query('SELECT * FROM faculty');
+        const { rows: faculty } = await client.query('SELECT * FROM faculty');
         res.json(faculty);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error fetching faculty:', error); // Log the error for debugging
+        res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        client.release(); // Release the client back to the pool
     }
 };
 
-exports.getFacultyById = async (req, res) => {
-    let connection;
+export const getFacultyById = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        connection = await connectDB();
-        const [faculty] = await connection.promise().query('SELECT * FROM faculty WHERE id = ?', [req.params.id]);
+        const { rows: faculty } = await client.query('SELECT * FROM faculty WHERE id = $1', [req.params.id]);
         if (faculty.length === 0) {
             return res.status(404).json({ message: 'Faculty member not found' });
         }
-        res.json(faculty[0]); // Return the first faculty object
+        res.json(faculty[0]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error fetching faculty by ID:', error); // Log the error for debugging
+        res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        client.release(); // Release the client back to the pool
     }
 };
 
-exports.createFaculty = async (req, res) => {
-    let connection;
+export const createFaculty = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        connection = await connectDB();
-        const { name, email, password, ...otherDetails } = req.body; // Destructure to get the necessary fields
-        const [result] = await connection.promise().query('INSERT INTO faculty (name, email, password, ...) VALUES (?, ?, ?, ...)', [name, email, password, ...otherDetails]);
+        const { name, email, password, ...otherDetails } = req.body;
 
-        const newFaculty = { id: result.insertId, name, email, password, ...otherDetails }; // Include the newly created ID
+        // Ensure required fields are present
+        if (!name || !email || !password) {
+            return res.status(400).json({ error: 'Name, email, and password are required' });
+        }
+
+        // Construct the SQL query dynamically to include additional fields
+        const columns = ['name', 'email', 'password', ...Object.keys(otherDetails)];
+        const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
+        const values = [name, email, password, ...Object.values(otherDetails)];
+
+        const { rows } = await client.query(`INSERT INTO faculty (${columns.join(', ')}) VALUES (${placeholders}) RETURNING id`, values);
+
+        const newFaculty = { id: rows[0].id, name, email, ...otherDetails };
         res.status(201).json(newFaculty);
     } catch (error) {
+        console.error('Error creating faculty:', error); // Log the error for debugging
         res.status(400).json({ error: error.message });
+    } finally {
+        client.release(); // Release the client back to the pool
     }
 };
 
-exports.updateFaculty = async (req, res) => {
-    let connection;
+export const updateFaculty = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        connection = await connectDB();
-        const { name, email, password, ...otherDetails } = req.body; // Destructure to get the necessary fields
-        const [result] = await connection.promise().query('UPDATE faculty SET name = ?, email = ?, password = ?, ... WHERE id = ?', [name, email, password, ...otherDetails, req.params.id]);
+        const { name, email, password, ...otherDetails } = req.body;
 
-        if (result.affectedRows === 0) {
+        // Construct the SQL query dynamically to include additional fields
+        const updates = ['name = $1', 'email = $2', 'password = $3', ...Object.keys(otherDetails).map((key, index) => `${key} = $${index + 4}`)];
+        const values = [name, email, password, ...Object.values(otherDetails), req.params.id];
+
+        const { rowCount } = await client.query(`UPDATE faculty SET ${updates.join(', ')} WHERE id = $${updates.length + 1}`, values);
+
+        if (rowCount === 0) {
             return res.status(404).json({ message: 'Faculty member not found' });
         }
 
         res.json({ message: "Faculty member updated successfully" });
     } catch (error) {
+        console.error('Error updating faculty:', error); // Log the error for debugging
         res.status(400).json({ error: error.message });
+    } finally {
+        client.release(); // Release the client back to the pool
     }
 };
 
-exports.deleteFaculty = async (req, res) => {
-    let connection;
+export const deleteFaculty = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
     try {
-        connection = await connectDB();
-        const [result] = await connection.promise().query('DELETE FROM faculty WHERE email = ?', [req.params.email]);
+        const { rowCount } = await client.query('DELETE FROM faculty WHERE email = $1', [req.params.email]);
 
-        if (result.affectedRows === 0) {
+        if (rowCount === 0) {
             return res.status(404).json({ message: "Faculty not found" });
         }
 
         res.json({ message: 'Faculty member deleted successfully' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error deleting faculty:', error); // Log the error for debugging
+        res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        client.release(); // Release the client back to the pool
     }
 };

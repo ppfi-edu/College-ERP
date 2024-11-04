@@ -51,10 +51,12 @@ const AdminFacultyLogin = () => {
         handleShowToast();
         return;
       }
-
+      const isStudent = false;
       const { token, isAdmin } = await response.json();
       localStorage.setItem("jwt", token);
-      localStorage.setItem("isAdmin", isAdmin);
+      localStorage.setItem("isAdmin", JSON.stringify(isAdmin)); // Convert to string
+      localStorage.setItem("isStudent", JSON.stringify(isStudent)); // Convert to string
+
 
       setMessage("Login sucessfull! , Welcome");
       handleShowToast();

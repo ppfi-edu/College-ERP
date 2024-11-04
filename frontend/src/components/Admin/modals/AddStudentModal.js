@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -12,29 +11,21 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
     const [name, setName] = useState(null);
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
+    const [enrollmentYear, setEnrollmentYear] = useState(null);
+    const [branch, setBranch] = useState(null);
     const [loading, setLoading] = useState(false);
     const [courses, setCourses] = useState([]);
-    const [courseId, setCourseId] = useState(null);
+    const [selectedCourses, setSelectedCourses] = useState([]);
 
-    const handleNameChange = (e) => {
-        setName(e.target.value);
-    };
-
-    const handleCourseNameChange = (e) => {
-        const selectedCourse = courses.find(course => course.name === e.target.value);
-        if (selectedCourse) {
-            setCourseId(selectedCourse._id);
-        } else {
-            setCourseId(null);
-        }
-    };
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
+    const handleNameChange = (e) => setName(e.target.value);
+    const handleEmailChange = (e) => setEmail(e.target.value);
+    const handlePasswordChange = (e) => setPassword(e.target.value);
+    const handleEnrollmentYearChange = (e) => setEnrollmentYear(e.target.value);
+    const handleBranchChange = (e) => setBranch(e.target.value);
+    
+    const handleCourseChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setSelectedCourses(selectedOptions);
     };
 
     useEffect(() => {
@@ -44,10 +35,9 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
     const fetchCourses = async () => {
         try {
             const response = await fetch("http://localhost:5173/api/courses");
-            if (!response.ok) {
-                throw new Error('Failed to fetch courses');
-            }
+            if (!response.ok) throw new Error('Failed to fetch courses');
             const data = await response.json();
+            console.log(data);
             setCourses(data);
         } catch (error) {
             console.error(error);
@@ -58,20 +48,20 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
         event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
-            event.preventDefault();
             event.stopPropagation();
             setValidated(true);
             return;
         }
 
-        setValidated(true);
         setLoading(true);
+        console.log({ name, email, password, selectedCourses, enrollmentYear, branch });
         const response = await fetch("http://localhost:5173/api/students/", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, email, password, course: courseId })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name, email, password, courses: selectedCourses, 
+                enrollmentYear, branch
+            })
         });
         setLoading(false);
 
@@ -79,13 +69,12 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
             setMessage("Failed to add student: Email already exists");
             handleShowToast();
             handleClose();
-            setValidated(false);
         } else {
             setMessage("Student added successfully");
             handleShowToast();
             handleClose();
-            setValidated(false);
         }
+        setValidated(false);
     };
 
     return (
@@ -96,80 +85,68 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Modal.Body className='px-5 py-4'>
                     <Row className="mb-3">
-                        <Form.Group as={Col} md="6" controlId="validationCustom01">
-                            <Form.Label>Full name</Form.Label>
+                        <Form.Group as={Col} md="6">
+                            <Form.Label style={{ color: 'black' }}>Full name</Form.Label>
                             <Form.Control
-                                required
-                                type="text"
-                                placeholder="Enter students name"
+                                required type="text"
+                                placeholder="Enter student's name"
                                 onChange={handleNameChange}
                             />
-                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                                This field can't be blank
-                            </Form.Control.Feedback>
                         </Form.Group>
-
-                        <Form.Group as={Col} md="6" controlId="validationCustom01.1">
-                            <Form.Label>Course</Form.Label>
-                            <Form.Select
-                                required
-                                type="text"
-                                placeholder="Enter Course name"
-                                onChange={handleCourseNameChange}
-                            >
-                                <option value="">Select a course...</option>
-                                {courses.map(course => (
-                                    <option key={course._id} value={course.name}>{course.name}</option>
-                                ))}
-                            </Form.Select>
-                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                                This field can't be blank
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                    </Row>
-
-
-                    <Row className="mb-3">
-                        <Form.Group as={Col} md="12" controlId="validationCustom02">
-                            <Form.Label>Email</Form.Label>
+                        <Form.Group as={Col} md="6">
+                            <Form.Label style={{ color: 'black' }}>Email</Form.Label>
                             <Form.Control
-                                type="email"
-                                placeholder="Enter students email address"
-                                required
+                                type="email" required
+                                placeholder="Enter student's email address"
                                 onChange={handleEmailChange}
                             />
-                            <Form.Control.Feedback type="invalid">
-                                Enter a valid email address
-                            </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
-
 
                     <Row className="mb-3">
-                        <Form.Group as={Col} md="12" controlId="validationCustom03">
-                            <Form.Label>Password</Form.Label>
+                        <Form.Group as={Col} md="6">
+                            <Form.Label style={{ color: 'black' }}>Password</Form.Label>
                             <Form.Control
-                                type="password"
-                                placeholder="Enter students password"
-                                required
+                                type="password" required
+                                placeholder="Enter student's password"
                                 onChange={handlePasswordChange}
                             />
-                            <Form.Control.Feedback>
-                                Looks good!
-                            </Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                                This field can't be blank
-                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group as={Col} md="6">
+                            <Form.Label style={{ color: 'black' }}>Enrollment Year</Form.Label>
+                            <Form.Control
+                                type="number" required
+                                placeholder="Enter enrollment year (e.g., 2022)"
+                                onChange={handleEnrollmentYearChange}
+                            />
                         </Form.Group>
                     </Row>
 
+                    <Row className="mb-3">
+                        <Form.Group as={Col} md="6">
+                            <Form.Label style={{ color: 'black' }}>Branch</Form.Label>
+                            <Form.Select required onChange={handleBranchChange}>
+                                <option value="">Select branch...</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                {/* Add other branches as needed */}
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group as={Col} md="6">
+                            <Form.Label style={{ color: 'black' }}>Courses</Form.Label>
+                            <Form.Select
+                                multiple required
+                                onChange={handleCourseChange}
+                            >
+                                {courses.map(course => (
+                                    <option key={course.id} value={course.course_code}>{course.course_name}</option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
+                    <Button variant="secondary" onClick={handleClose}>Close</Button>
                     <Button variant="success" type="submit">
                         {loading ? <Spinner animation="border" size="sm" /> : 'Add Student'}
                     </Button>

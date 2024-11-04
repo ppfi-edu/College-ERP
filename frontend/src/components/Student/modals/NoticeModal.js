@@ -1,31 +1,36 @@
 import React, { useEffect, useState } from "react";
-
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
 function NoticeModal({ show, handleClose }) {
-    const [notice, setNotice] = useState([]);
+    const [notice, setNotice] = useState([]); // Initialize as an empty array
 
     const fetchNotice = async () => {
         try {
             const response = await fetch("http://localhost:5173/api/notice");
             const data = await response.json();
 
-            setNotice(data);
+            // Ensure 'data' is an array
+            if (Array.isArray(data)) {
+                setNotice(data);
+            } else {
+                setNotice([]); // Set to empty array if data is not an array
+            }
 
             if (!response.ok) {
                 handleClose();
             }
         } catch (error) {
             console.error(error);
+            setNotice([]); // Set to empty array on error as well
         }
     }
 
     useEffect(() => {
         fetchNotice();
-    });
+    }, []); // Add dependency array to run effect only once on mount
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -40,25 +45,29 @@ function NoticeModal({ show, handleClose }) {
                     </div>
                     <hr className="text-black m-0" />
                     <div className="scrollable-container" style={{ height: '250px', overflowY: 'auto' }}>
-                        {notice
-                            .sort((a, b) => b.noticeNumber - a.noticeNumber)
-                            .map(notice => (
-                                <div
-                                    className='d-flex bg-hover-div'
-                                    key={notice._id}
-                                    role='button'
-                                >
-                                    <Row className="w-100">
-                                        <Col xs={8} className="p-4">
-                                            <p className="px-3 mb-0 fw-bold" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>{notice.noticeDescription}</p>
-                                        </Col>
+                        {notice.length === 0 ? ( // Check for empty notices
+                            <p className="text-center">No notices available</p>
+                        ) : (
+                            notice
+                                .sort((a, b) => b.noticeNumber - a.noticeNumber)
+                                .map(notice => (
+                                    <div
+                                        className='d-flex bg-hover-div'
+                                        key={notice._id}
+                                        role='button'
+                                    >
+                                        <Row className="w-100">
+                                            <Col xs={8} className="p-4">
+                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>{notice.noticeDescription}</p>
+                                            </Col>
 
-                                        <Col xs={4} className="p-4">
-                                            <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notice.noticeDate}</p>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            ))}
+                                            <Col xs={4} className="p-4">
+                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notice.noticeDate}</p>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                ))
+                        )}
                     </div>
                 </div>
             </Modal.Body>
@@ -68,7 +77,7 @@ function NoticeModal({ show, handleClose }) {
                 </Button>
             </Modal.Footer>
         </Modal>
-    )
+    );
 }
 
 export default NoticeModal;
