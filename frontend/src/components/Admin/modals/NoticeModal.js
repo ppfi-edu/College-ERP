@@ -14,29 +14,29 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
     const [loading, setLoading] = useState(false);
     const [modalUpdated, setModalUpdated] = useState(false);
 
-    useEffect(() => {
-        const fetchNotice = async () => {
-            try {
-                const response = await fetch("http://localhost:5173/api/notice");
-                const data = await response.json();
+    const fetchNotice = async () => {
+        try {
+            const response = await fetch("http://localhost:5173/api/notice");
+            const data = await response.json();
 
-                setNotice(data);
+            setNotice(data);
 
-                if (!response.ok) {
-                    setMessage("Failed to fetch notice");
-                    handleShowToast();
-                    handleClose();
-                    setValidated(false);
-                } else {
-                    setValidated(false);
-                }
-            } catch (error) {
-                console.error(error);
+            if (!response.ok) {
+                setMessage("Failed to fetch notice");
+                handleShowToast();
+                handleClose();
+                setValidated(false);
+            } else {
+                setValidated(false);
             }
+        } catch (error) {
+            console.error(error);
         }
+    };
+
+    useEffect(() => {
         fetchNotice();
     }, [modalUpdated, handleClose, handleShowToast, setMessage]);
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -148,6 +148,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
                                     type="text"
                                     placeholder="Enter notice description"
                                     onChange={handleNoticeChange}
+                                    value={noticeDescription}
                                 />
                             </div>
                         </Form.Group>
