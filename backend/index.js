@@ -22,6 +22,7 @@ import noticeRoutes from './routes/noticeRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventsRoutes.js';
 import feeRoutes from './routes/feeRoutes.js';
+import libRoutes from './routes/libRoutes.js';
 
 // Mounting routes
 app.use('/api/students', studentRoutes);
@@ -32,6 +33,7 @@ app.use('/api/notice', noticeRoutes);
 app.use('/api/login', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/fee', feeRoutes);
+app.use('/api/lib', libRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
