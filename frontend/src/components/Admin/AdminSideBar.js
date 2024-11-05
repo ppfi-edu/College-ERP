@@ -93,6 +93,13 @@ const Sidebar = () => {
           </li>
 
           <li className="nav-item p-1">
+            <Link to="/admin/dashboard/manage-library" className="nav-link text-black">
+              <i className="bi bi-book me-2 fs-5"></i>
+              <span className="fs-5">Manage Library</span>
+            </Link>
+          </li>
+
+          <li className="nav-item p-1">
             <Link to="/admin/help-support" className="nav-link text-black">
               <i className="bi bi-info-circle-fill me-2 fs-5"></i>
               <span className="fs-5">Help & Support</span>
