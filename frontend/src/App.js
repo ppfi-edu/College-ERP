@@ -26,6 +26,7 @@ import ViewAttendance from './components/Student/ViewAttendance';
 import StudentHelpAndSupport from './components/StudentHelpAndSupport';
 
 import Unauthorised from './components/Unauthorised';
+import { Alert } from 'react-bootstrap';
 
 function App() {
   const LoggedIn = ({ element }) => {
@@ -73,21 +74,25 @@ function App() {
   
     // Retrieve and parse isAdmin safely
     const adminValue = localStorage.getItem('isAdmin');
-    const isAdmin = adminValue !== undefined ? adminValue : false; // Parse JSON safely
+    const isAdmin = adminValue !== undefined ?( adminValue ==='false'?false:true) : false; // Parse JSON safely
   
     // Retrieve and parse isStudent safely
     const studentValue = localStorage.getItem('isStudent');
-    const isStudent = studentValue !== undefined ? studentValue : false; // Parse JSON safely
+    const isStudent = studentValue !== undefined ? (studentValue ==='false'?false:true) : false; // Parse JSON safely
   
   
     // Check the conditions based on the role and the current path
     if (isAdmin && window.location.pathname.startsWith('/admin')) {
+      //alert("Admin");
       return element; // Allow access to admin routes
     } else if (!isAdmin && !isStudent && window.location.pathname.startsWith('/faculty')) {
+     // alert("Faculty");
       return element; // Allow access to faculty routes
     } else if (!isAdmin && isStudent && window.location.pathname.startsWith('/student')) {
+     // alert("Student");
       return element; // Allow access to student routes
     } else {
+      console.log("sddff",!isAdmin,!isStudent,window.location.pathname,window.location.pathname.startsWith('/faculty'),!isAdmin && !isStudent && window.location.pathname.startsWith('/faculty'))
       return <Unauthorised />; // Deny access to other routes
     }
   };

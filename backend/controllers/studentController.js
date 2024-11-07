@@ -66,7 +66,7 @@ export const updateStudent = async (req, res) => {
     try {
         const { name, password, email, course } = req.body; // Extract fields to be updated
         const { rowCount } = await client.query(
-            'UPDATE students SET name = $1, password = $2, email = $3, course = $4 WHERE id = $5',
+            'UPDATE Student SET name = $1, password = $2, email = $3, course = $4 WHERE id = $5',
             [name, password, email, course, req.params.id]
         );
         if (rowCount === 0) {
@@ -104,7 +104,7 @@ export const updateAttendance = async (req, res) => {
         }
 
         const bulkOperations = updates.map(update => {
-            return client.query('UPDATE Student SET attendance = attendance + $1 WHERE id = $2', [update.attendanceCount, update.studentId]);
+            return client.query('UPDATE Student SET Attendance = Attendance + $1 WHERE id = $2', [update.attendanceCount, update.studentId]);
         });
 
         await Promise.all(bulkOperations);
@@ -120,7 +120,7 @@ export const totalAttendance = async (req, res) => {
     const client = await connectDB();
     try {
         const { updatedCount } = req.body; // Assuming you are passing the count to update
-        const { rowCount } = await client.query('UPDATE attendance SET count = $1 WHERE id = $2', [updatedCount, "662b3c2219a7f45154c025bb"]); // Adjust the id based on your context
+        const { rowCount } = await client.query('UPDATE Attendance SET count = $1 WHERE id = $2', [updatedCount, "662b3c2219a7f45154c025bb"]); // Adjust the id based on your context
         if (rowCount === 0) {
             return res.status(404).json({ message: "Attendance not found" });
         }

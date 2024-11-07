@@ -13,11 +13,11 @@ function NoticeModal({ show, handleClose }) {
             const data = await response.json();
 
             // Ensure 'data' is an array
-            if (Array.isArray(data)) {
-                setNotice(data);
-            } else {
-                setNotice([]); // Set to empty array if data is not an array
-            }
+            if(data != null || data != undefined || data.length != 0){
+                setNotice(data);}
+                else{
+                    setNotice([]);
+                }
 
             if (!response.ok) {
                 handleClose();
@@ -41,7 +41,7 @@ function NoticeModal({ show, handleClose }) {
                 <div className='mt-3 border border-2 rounded-2 '>
                     <div className="d-flex w-100">
                         <Col xs={8} className="p-3 px-4 fw-bold">Notice Description</Col>
-                        <Col xs={4} className="p-3 px-2 fw-bold">Date</Col>
+                        <Col xs={4} className="p-3 px-2 fw-bold">Notice Title</Col>
                     </div>
                     <hr className="text-black m-0" />
                     <div className="scrollable-container" style={{ height: '250px', overflowY: 'auto' }}>
@@ -49,7 +49,7 @@ function NoticeModal({ show, handleClose }) {
                             <p className="text-center">No notices available</p>
                         ) : (
                             notice
-                                .sort((a, b) => b.noticeNumber - a.noticeNumber)
+                                .sort((a, b) => b.id - a.id)
                                 .map(notice => (
                                     <div
                                         className='d-flex bg-hover-div'
@@ -58,11 +58,11 @@ function NoticeModal({ show, handleClose }) {
                                     >
                                         <Row className="w-100">
                                             <Col xs={8} className="p-4">
-                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>{notice.noticeDescription}</p>
+                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>{notice.noticedescription}</p>
                                             </Col>
 
                                             <Col xs={4} className="p-4">
-                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notice.noticeDate}</p>
+                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{notice.noticetitle}</p>
                                             </Col>
                                         </Row>
                                     </div>

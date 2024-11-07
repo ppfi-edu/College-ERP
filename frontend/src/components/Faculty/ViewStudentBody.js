@@ -80,25 +80,24 @@ function ViewStudentBody() {
                         {filteredStudents
                             .sort((a, b) => a.email.localeCompare(b.email))
                             .map(student => (
-                                <div
-                                    className='d-flex bg-hover-div'
-                                    key={student.id}
-                                    role='button'
-                                >
-                                    <Row className="w-100">
-                                        <Col xs={4} className="p-4">
-                                            <p className="px-3 mb-0" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.name}</p>
-                                        </Col>
-
-                                        <Col xs={4} className="p-4">
-                                            <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.course.name}</p>
-                                        </Col>
-                                        <Col xs={4} className="pt-3">
-                                            <p className="mb-0 text-muted overflow-auto">{student.email}</p>
-                                        </Col>
-                                    </Row>
-
-                                </div>
+                                <div className='d-flex bg-hover-div' key={student.id} role='button'>
+                                <Row className="w-100">
+                                  <Col xs={4} className="p-4">
+                                    <p className="px-3 mb-0" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {student.name || "N/A"}
+                                    </p>
+                                  </Col>
+                                  <Col xs={4} className="p-4">
+                                    <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {student.courseName || "N/A"}
+                                    </p>
+                                  </Col>
+                                  <Col xs={4} className="pt-3">
+                                    <p className="mb-0 text-muted overflow-auto">{student.email || "N/A"}</p>
+                                  </Col>
+                                </Row>
+                              </div>
+                              
                             ))}
                     </div>
                 </div>

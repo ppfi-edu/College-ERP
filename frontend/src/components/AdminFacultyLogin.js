@@ -37,10 +37,11 @@ const AdminFacultyLogin = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email: lowercasedEmail, password }),
+          body: JSON.stringify({ email: email, password:password }),
         }
       );
       setLoading(false);
+      console.log(response);
 
       if (response.status === 401) {
         setMessage("Invalid email or password");
@@ -62,9 +63,11 @@ const AdminFacultyLogin = () => {
       handleShowToast();
 
       if (isAdmin) {
-        window.location.href = "/admin/dashboard";
+    //    window.location.href = "/admin/dashboard";
+    console.log("Admin");
       } else {
         window.location.href = "/faculty/dashboard";
+        console.log("Faculty");
       }
     } catch (error) {
       console.error("Login error");

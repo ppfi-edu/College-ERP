@@ -13,6 +13,7 @@ export const adminFacultyLogin = async (req, res) => {
     let { rows } = await client.query('SELECT * FROM Admin WHERE email = $1', [email]);
     let user = rows[0];
     let isAdmin = false;
+    console.log(user);
 
     // If not found in Admin, try to find in the Faculty table
     if (!user) {

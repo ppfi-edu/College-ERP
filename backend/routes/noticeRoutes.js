@@ -6,7 +6,7 @@ import * as  noticeController from '../controllers/noticeController.js';
 
 
 router.get('/', noticeController.getAllNotice);
-router.post('/', noticeController.addNotice);
+router.post('/add', noticeController.addNotice);
 router.delete('/:id', noticeController.deleteNotice);
 
 // module.exports = router;

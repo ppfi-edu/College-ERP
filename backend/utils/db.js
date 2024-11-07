@@ -82,8 +82,8 @@ CREATE TABLE IF NOT EXISTS Attendance (
 const createNotice = `
 CREATE TABLE IF NOT EXISTS Notice (
     id SERIAL PRIMARY KEY,
-    noticeNumber INT NOT NULL,
-    noticeDescription TEXT NOT NULL,
+    noticeNumber INT ,
+    noticeDescription TEXT ,
     noticeDate DATE NOT NULL
 )
 `;
