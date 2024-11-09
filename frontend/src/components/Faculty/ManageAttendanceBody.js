@@ -61,6 +61,7 @@ function ManageAttendanceBody() {
                     throw new Error('Failed to fetch Total Attendance');
                 }
                 const data = await response.json();
+                console.log(data); 
                 setTotalAttendance(data.updatedAttendance.attendance);
             } catch (error) {
                 console.error(error);
@@ -183,8 +184,11 @@ function ManageAttendanceBody() {
                                             </Col>
 
                                             <Col xs={3} className="p-4">
-                                                <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.course.name}</p>
-                                            </Col>
+    <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {student.courseName || 'No course'} {/* Add fallback to handle undefined */}
+    </p>
+</Col>
+
                                             <Col xs={4} className="pt-3">
                                                 <p className="mb-0 text-muted overflow-auto">{student.email}</p>
                                             </Col>
