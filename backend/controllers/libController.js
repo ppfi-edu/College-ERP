@@ -132,13 +132,18 @@ export const ReturnBook = async (req, res) => {
 
 
 export const removeBook = async (req, res) => {
+
+    console.log("removing book")
     const client = await connectDB();
+    console.log("req.params", req.params)
     try {
         // Check if the book is currently issued
         const { rows: bookRows } = await client.query(
-            'SELECT issued FROM Library WHERE book_name = $1',
+            'SELECT issued FROM Library WHERE id = $1',
             [req.params.id]
         );
+
+        console.log("bookRows", bookRows)
 
         if (bookRows.length === 0) {
             return res.status(404).json({ message: "Library not found" });
@@ -147,11 +152,13 @@ export const removeBook = async (req, res) => {
         const { issued } = bookRows[0];
 
         if (issued) {
+            console.log("Book is currently issued to someone")
             return res.status(400).json({ message: "Book is currently issued to someone" });
+
         }
 
         // Delete the book if it is not issued
-        const { rowCount } = await client.query('DELETE FROM Library WHERE book_name = $1', [req.params.id]);
+        const { rowCount } = await client.query('DELETE FROM Library WHERE id = $1', [req.params.id]);
         if (rowCount === 0) {
             return res.status(404).json({ message: "Library not found" });
         }

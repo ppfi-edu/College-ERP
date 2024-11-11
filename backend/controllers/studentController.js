@@ -96,38 +96,176 @@ export const deleteStudent = async (req, res) => {
 };
 
 export const updateAttendance = async (req, res) => {
+    console.log("updateAttendance");
     const client = await connectDB();
     try {
-        const updates = req.body;
-        if (!Array.isArray(updates)) {
-            throw new Error('Updates must be an array');
-        }
+        const { faculty_id, student_ids } = req.body;
 
-        const bulkOperations = updates.map(update => {
-            return client.query('UPDATE Student SET Attendance = Attendance + $1 WHERE id = $2', [update.attendanceCount, update.studentId]);
-        });
+        console.log("Received request data:", { faculty_id, student_ids });
 
-        await Promise.all(bulkOperations);
+        // Increment total classes for the faculty
+        console.log("Incrementing total classes for faculty ID:", faculty_id);
+        await client.query('UPDATE Attendance SET total_classes = total_classes + 1 WHERE faculty_id = $1', [faculty_id]);
+
+        // Increment total attendance for present students and update their attendance percentage
+        console.log("Updating attendance for present students:", student_ids);
+        await client.query(
+            `UPDATE Attendance 
+             SET total_attendance = total_attendance + 1, 
+                 att_percentage = (total_attendance + 1) * 100.0 / total_classes 
+             WHERE faculty_id = $1 AND student_id = ANY($2::text[])`,
+            [faculty_id, student_ids]
+        );
+
+        // Update attendance percentage for absent students
+        console.log("Updating attendance percentage for absent students");
+        await client.query(
+            `UPDATE Attendance 
+             SET att_percentage = total_attendance * 100.0 / total_classes 
+             WHERE faculty_id = $1 AND student_id != ALL($2::text[])`,
+            [faculty_id, student_ids]
+        );
+
+        console.log("Attendance updated successfully for faculty ID:", faculty_id);
         res.json({ message: "Attendance updated successfully" });
     } catch (error) {
+        console.error("Error updating attendance:", error);
         res.status(500).json({ error: error.message });
     } finally {
+        console.log("Releasing database client");
         client.release();
     }
 };
 
+// export const updateAttendance = async (req, res) => {
+//     console.log("updateAttendance");
+//     const client = await connectDB();
+
+//     try {
+//         const { faculty_id, student_ids } = req.body;
+
+//         console.log("Received request data:", { faculty_id, student_ids });
+
+//         // Filter out invalid IDs if needed
+//         // const validStudentIds = student_ids.filter((id) => typeof id === 'string' && id.match(/^[0-9a-fA-F-]{36}$/));
+
+//         const validStudentIds = student_ids;
+
+//         console.log("Faculty ID:", faculty_id);
+//         console.log("Filtered Student IDs:", validStudentIds);
+
+//         // Increment total classes for the faculty
+//         console.log("Incrementing total classes for faculty ID:", faculty_id);
+//         await client.query('UPDATE Attendance SET total_classes = total_classes + 1 WHERE faculty_id = $1', [faculty_id]);
+
+//         // Increment total attendance for present students and update their attendance percentage
+//         console.log("Updating attendance for present students:", validStudentIds);
+//         await client.query(
+//             `UPDATE Attendance 
+//              SET total_attendance = total_attendance + 1, 
+//                  att_percentage = (total_attendance + 1) * 100.0 / total_classes 
+//              WHERE faculty_id = $1 AND student_id = ANY($2::uuid[])`,
+//             [faculty_id, validStudentIds]
+//         );
+
+//         // Update attendance percentage for absent students
+//         console.log("Updating attendance percentage for absent students");
+//         await client.query(
+//             `UPDATE Attendance 
+//              SET att_percentage = total_attendance * 100.0 / total_classes 
+//              WHERE faculty_id = $1 AND student_id != ALL($2::uuid[])`,
+//             [faculty_id, validStudentIds]
+//         );
+
+//         console.log("Attendance updated successfully for faculty ID:", faculty_id);
+//         res.json({ message: "Attendance updated successfully" });
+//     } catch (error) {
+//         console.error("Error updating attendance:", error);
+//         res.status(500).json({ error: error.message });
+//     } finally {
+//         console.log("Releasing database client");
+//         client.release();
+//     }
+// };
+
+
 export const totalAttendance = async (req, res) => {
+    console.log("totalAttendance");
     const client = await connectDB();
     try {
-        const { updatedCount } = req.body; // Assuming you are passing the count to update
-        const { rowCount } = await client.query('UPDATE Attendance SET count = $1 WHERE id = $2', [updatedCount, "662b3c2219a7f45154c025bb"]); // Adjust the id based on your context
-        if (rowCount === 0) {
-            return res.status(404).json({ message: "Attendance not found" });
-        }
-        res.json({ updatedAttendance: req.body });
+        const { faculty_id } = req.body; // Get faculty_id from the request body
+        console.log(faculty_id);
+        const { rows: attendance } = await client.query(
+            `SELECT s.*, a.total_classes, a.total_attendance, a.att_percentage 
+             FROM student s 
+             JOIN Attendance a ON s.student_id = a.student_id 
+             WHERE a.faculty_id = $1`,
+            [faculty_id]
+        );
+        console.log("attendance");
+        // console.log(attendance);
+        res.json(attendance);
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
         client.release();
     }
-};
+}
+
+
+
+
+export const averageAttendance = async (req, res) => {
+    const client = await connectDB();
+    try {
+        const { faculty_id } = req.body;
+        const { rows: attendance } = await client.query(
+            'SELECT att_percentage FROM Attendance WHERE faculty_id = $1',
+            [faculty_id]
+        );
+
+        const totalStudents = attendance.length;
+        const totalAttendance = attendance.reduce((total, { att_percentage }) => total + att_percentage, 0);
+        const averageAttendance = totalStudents > 0 ? totalAttendance / totalStudents : 0;
+
+        res.json({ totalStudents, averageAttendance });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+}
+
+export const fetchAllattendanceofStudent = async (req, res) => {
+    const client = await connectDB();
+    try {
+        const { id } = req.body;
+
+        // Fetch student_id from Student table using id
+        const { rows: studentRows } = await client.query(
+            'SELECT student_id FROM Student WHERE id = $1',
+            [id]
+        );
+
+        if (studentRows.length === 0) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const student_id = studentRows[0].student_id;
+
+        // Fetch attendance and join with Faculty table using faculty_id
+        const { rows: attendance } = await client.query(
+            `SELECT a.*, f.name as faculty_name, f.course_id as course_id
+             FROM Attendance a 
+             JOIN Faculty f ON a.faculty_id = f.id 
+             WHERE a.student_id = $1`,
+            [student_id]
+        );
+
+        res.json(attendance);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+}

@@ -6,55 +6,75 @@ import StudentImage from "../../assets/StudentImage.png";
 import ManageProfileImage from "../../assets/ManageProfileImage.png";
 import ManageAttendanceImage from "../../assets/ManageAttendanceImage.png";
 import SalaryImage from "../../assets/SalaryImage.png";
+import {jwtDecode} from "jwt-decode"; // Ensure this is correctly imported
 
 function FacultyBody() {
     const [totalStudents, setTotalStudents] = useState(0);
     const [averageAttendance, setAverageAttendance] = useState(0);
-    const [totalAttendance, setTotalAttendance] = useState(0);
+
+    // useEffect(() => {
+    //     // Decode the token once on component mount
+    //     const token = localStorage.getItem("jwt");
+    //     if (token) {
+    //         const decodedToken = jwtDecode(token);
+    //         setFacultyId(decodedToken);
+    //     }
+    // }, []);
+
+    //     // Fetch attendance data only when facultyId is available
+    //     const fetchAttendanceData = async () => {
+    //         try {
+    //             console.log("sending request!!")
+    //             const response = await fetch(`http://localhost:5173/api/student/avg/${facultyId}`);
+    //             const data = await response.json();
+    //             setTotalStudents(data.totalStudents);
+    //             setAverageAttendance(data.totalAttendance);
+    //             console.log("all set!!")
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     };
 
     useEffect(() => {
-        const fetchTotalAttendance = async () => {
+        const fetchAttendanceData = async () => {
+            const token = localStorage.getItem("jwt");
+            if (!token) {
+                console.error("Token not found!");
+                return;
+            }
+
             try {
-                const response = await fetch("http://localhost:5173/api/students/total-attendance", {
-                    method: 'POST',
+                // Decode the token to extract facultyId
+                const decodedToken = jwtDecode(token);
+                const faculty_id = decodedToken.id; // Update this based on your token structure
+
+                console.log("Sending request with facultyId!");
+
+                const response = await fetch("http://localhost:5173/api/students/avg", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({ faculty_id }),
                 });
+
                 if (!response.ok) {
-                    throw new Error('Failed to fetch Total Attendance');
+                    throw new Error(`Error: ${response.statusText}`);
                 }
+
                 const data = await response.json();
-                setTotalAttendance(data.updatedAttendance.attendance);
+                setTotalStudents(data.totalStudents);
+                setAverageAttendance(data.averageAttendance);
+                console.log("Data fetched successfully!");
+                console.log(totalStudents);
+                console.log(averageAttendance);
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching attendance data:", error);
             }
         };
-        fetchTotalAttendance();
 
-        const fetchStudentsData = async () => {
-            try {
-                const response = await fetch("http://localhost:5173/api/students/");
-                const data = await response.json();
-                setTotalStudents(data.length);
-
-                let sum = 0;
-                data.forEach((student) => {
-                    sum = sum + student.attendance;
-                });
-
-                if (data.length > 0 && totalAttendance !== 0) {
-                    const average = (sum / data.length) * 100 / totalAttendance;
-                    setAverageAttendance(average.toFixed(2));
-                } else {
-                    setAverageAttendance(0);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchStudentsData();
-    }, [totalAttendance]);
+        fetchAttendanceData(); // Invoke the fetch function
+    }, [totalStudents, averageAttendance]); // Empty dependency array ensures it runs only once on mount
 
 
     return (
@@ -70,8 +90,8 @@ function FacultyBody() {
                         <Card
                             className="m-3 p-4 shadow"
                             style={{ width: "18rem" }}
-                            onMouseEnter={(e) => e.target.classList.add('shadow-lg')}
-                            onMouseLeave={(e) => e.target.classList.remove('shadow-lg')}
+                            onMouseEnter={(e) => e.target.classList.add("shadow-lg")}
+                            onMouseLeave={(e) => e.target.classList.remove("shadow-lg")}
                         >
                             <div className="d-flex">
                                 <Card.Img
@@ -89,7 +109,8 @@ function FacultyBody() {
                         </Card>
                     </Link>
 
-                    <Link to={"/faculty/dashboard/manage-attendance"}
+                    <Link
+                        to={"/faculty/dashboard/manage-attendance"}
                         data-mdb-tooltip-init
                         title="Manage Attendance"
                         className="text-decoration-none"
@@ -97,8 +118,8 @@ function FacultyBody() {
                         <Card
                             className="m-3 p-4 shadow"
                             style={{ width: "18rem" }}
-                            onMouseEnter={(e) => e.target.classList.add('shadow-lg')}
-                            onMouseLeave={(e) => e.target.classList.remove('shadow-lg')}
+                            onMouseEnter={(e) => e.target.classList.add("shadow-lg")}
+                            onMouseLeave={(e) => e.target.classList.remove("shadow-lg")}
                         >
                             <div className="d-flex">
                                 <Card.Img
@@ -119,16 +140,12 @@ function FacultyBody() {
                 </div>
 
                 <div className="d-flex mx-5">
-                    <Link
-                        data-mdb-tooltip-init
-                        title="Current Salary"
-                        className="text-decoration-none"
-                    >
+                    <Link data-mdb-tooltip-init title="Current Salary" className="text-decoration-none">
                         <Card
                             className="m-3 p-4 shadow"
                             style={{ width: "18rem" }}
-                            onMouseEnter={(e) => e.target.classList.add('shadow-lg')}
-                            onMouseLeave={(e) => e.target.classList.remove('shadow-lg')}
+                            onMouseEnter={(e) => e.target.classList.add("shadow-lg")}
+                            onMouseLeave={(e) => e.target.classList.remove("shadow-lg")}
                         >
                             <div className="d-flex">
                                 <Card.Img
@@ -147,7 +164,8 @@ function FacultyBody() {
                         </Card>
                     </Link>
 
-                    <Link to={"/faculty/dashboard/view-students"}
+                    <Link
+                        to={"/faculty/dashboard/view-students"}
                         data-mdb-tooltip-init
                         title="View Students"
                         className="text-decoration-none"
@@ -155,8 +173,8 @@ function FacultyBody() {
                         <Card
                             className="m-3 p-4 shadow"
                             style={{ width: "18rem" }}
-                            onMouseEnter={(e) => e.target.classList.add('shadow-lg')}
-                            onMouseLeave={(e) => e.target.classList.remove('shadow-lg')}
+                            onMouseEnter={(e) => e.target.classList.add("shadow-lg")}
+                            onMouseLeave={(e) => e.target.classList.remove("shadow-lg")}
                         >
                             <div className="d-flex">
                                 <Card.Img

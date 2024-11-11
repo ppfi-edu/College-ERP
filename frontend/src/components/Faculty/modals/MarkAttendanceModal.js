@@ -6,12 +6,23 @@ import Modal from 'react-bootstrap/Modal';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
+import { jwtDecode } from 'jwt-decode';
 
 function MarkAttendanceModal({ show, handleClose, students, totalAttendance, setMessage, handleShowToast }) {
     const [loading, setLoading] = useState(false);
     const [searchEmail, setSearchEmail] = useState('');
     const [filteredStudents, setFilteredStudents] = useState([]);
-    const [selectedStudents, setSelectedStudents] = useState([]);
+    const [selectedStudents, setSelectedStudents] = useState([]); 
+    const [facultyId, setFacultyId] = useState('');
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwt");
+    
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setFacultyId(decodedToken.id);
+        }
+    }, []);
 
     const handleSearchChange = (e) => {
         setSearchEmail(e.target.value);
@@ -27,28 +38,6 @@ function MarkAttendanceModal({ show, handleClose, students, totalAttendance, set
         });
     };
 
-    const updateTotalAttendance = async () => {
-        try {
-            const response = await fetch("http://localhost:5173/api/students/total-attendance", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    attendance: totalAttendance + 1,
-                }),
-            });
-            if (!response.ok) {
-                setMessage("Failed to mark attendance");
-                handleShowToast();
-                handleClose();
-                return;
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
@@ -58,36 +47,29 @@ function MarkAttendanceModal({ show, handleClose, students, totalAttendance, set
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(
-                    selectedStudents.map(studentId => ({
-                        studentId,
-                        attendanceCount: 1,
-                    }))
-                ),
+                body: JSON.stringify({
+                    faculty_id: facultyId, // Replace facultyId with the actual value
+                    student_ids: selectedStudents, // Array of student IDs
+                }),
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to update attendance');
             }
 
-            if (!response.ok) {
-                setMessage("Failed to mark attendance");
-                handleShowToast();
-                handleClose();
-            } else {
-                setMessage("Attendance marked successfully");
-                updateTotalAttendance();
-                handleShowToast();
-                setLoading(false);
-                setSelectedStudents([]);
-                handleClose();
-            }
+            setMessage("Attendance marked successfully");
+            handleShowToast();
+            setSelectedStudents([]);
+            setLoading(false);
+            handleClose();
         } catch (error) {
             console.error(error);
+            setMessage("failed to update attendance");
+            handleShowToast();
             setLoading(false);
+            handleClose();
         }
     };
-
 
     useEffect(() => {
         const filtered = students.filter(student => student.email.includes(searchEmail));
@@ -97,19 +79,19 @@ function MarkAttendanceModal({ show, handleClose, students, totalAttendance, set
     }, [searchEmail, students]);
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} size="xl"> {/* Increased Modal Size */}
             <Modal.Header closeButton>
                 <Modal.Title>Mark Attendance</Modal.Title>
             </Modal.Header>
             <Form noValidate onSubmit={handleSubmit}>
-                <Modal.Body className='px-1 py-1'>
-                    <div className="m-2 mt-0 p-4">
+                <Modal.Body className='px-4 py-4'> {/* Increased padding for larger modal */}
+                    <div className="m-3 p-5">
                         <Form>
                             <Form.Group controlId="searchEmail">
                                 <Form.Label>Search by Email</Form.Label>
                                 <div className="input-group">
                                     <Form.Control
-                                        className=''
+                                        className='form-control-lg' 
                                         type="email"
                                         placeholder="Enter student's email"
                                         value={searchEmail}
@@ -119,36 +101,47 @@ function MarkAttendanceModal({ show, handleClose, students, totalAttendance, set
                                 </div>
                             </Form.Group>
                         </Form>
-                        <div className="mt-3 border border-2 rounded-2 scrollable-container" style={{ height: "22rem", overflowY: 'auto' }}>
-                            {filteredStudents
-                                .sort((a, b) => a.email.localeCompare(b.email))
-                                .map(student => (
-                                    <div
-                                        className='d-flex bg-hover-div'
-                                        key={student.id}
-                                        role='button'
-                                    >
-                                        <Row className="w-100" onClick={() => handleCheckboxChange(student.id)}>
-                                            <Col xs={1} className="pt-4">
-                                                <Form.Check
-                                                    className='px-3'
-                                                    type="checkbox"
-                                                    id={student.id}
-                                                    onChange={() => handleCheckboxChange(student.id)}
-                                                    checked={selectedStudents.includes(student.id)}
-                                                ></Form.Check>
-                                            </Col>
-                                            <Col xs={6} className="p-4">
-                                                <p className="px-3 mb-0 fw-bold" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.name}</p>
-                                            </Col>
-                                            <Col xs={5} className="pt-3">
-                                                <p className="mb-0 text-muted overflow-auto">{student.email}</p>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                ))}
-                        </div>
-                    </div >
+                        <div className="lg-3 border border-2 rounded-2 scrollable-container" style={{ height: "45rem", overflowY: 'auto' }}> 
+    <div className="d-flex w-100 border-bottom">
+        <Col xs={1} className="p-3 fw-bold">Select</Col>
+        <Col xs={4} className="p-3 fw-bold">Name</Col>
+        <Col xs={4} className="p-3 fw-bold">Email</Col>
+        <Col xs={3} className="p-3 fw-bold">Attendance %</Col>
+    </div>
+    {filteredStudents
+        .sort((a, b) => a.email.localeCompare(b.email))
+        .map(student => (
+            <div
+                className={`d-flex bg-hover-div ${selectedStudents.includes(student.student_id)}`} 
+                key={student.student_id}
+                role='button'
+            >
+                <Row className="w-100" onClick={() => handleCheckboxChange(student.student_id)}>
+                    <Col xs={1} className="pt-4">
+                        <Form.Check
+                            className='px-3'
+                            type="checkbox"
+                            id={student.student_id}
+                            onChange={() => handleCheckboxChange(student.student_id)}
+                            checked={selectedStudents.includes(student.student_id)}
+                            style={{ backgroundColor: selectedStudents.includes(student.student_id) ? '#28a745' : 'transparent' }} 
+                        ></Form.Check>
+                    </Col>
+                    <Col xs={4} className="p-4">
+                        <p className="px-3 mb-0 fw-bold" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{student.name}</p>
+                    </Col>
+                    <Col xs={4} className="pt-3">
+                        <p className="mb-0 text-muted overflow-auto">{student.email}</p>
+                    </Col>
+                    <Col xs={3} className="pt-3">
+                        <p className="mb-0 text-muted overflow-auto">{student.att_percentage}</p>
+                    </Col>
+                </Row>
+            </div>
+        ))}
+</div>
+
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
@@ -160,7 +153,7 @@ function MarkAttendanceModal({ show, handleClose, students, totalAttendance, set
                 </Modal.Footer>
             </Form>
         </Modal>
-    )
+    );
 }
 
 export default MarkAttendanceModal;

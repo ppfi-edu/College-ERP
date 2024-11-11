@@ -11,6 +11,8 @@ router.post('/update-attendance', studentController.updateAttendance);
 router.post('/total-attendance', studentController.totalAttendance);
 router.put('/:id', studentController.updateStudent);
 router.delete('/:email', studentController.deleteStudent);
+router.post('/avg', studentController.averageAttendance);
+router.post('/attendance', studentController.fetchAllattendanceofStudent);
 
 // module.exports = router;
 export default router;

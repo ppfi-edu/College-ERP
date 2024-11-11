@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import NotificationToast from '../NotificationToast';
 import MarkAttendanceModal from "./modals/MarkAttendanceModal";
+import {jwtDecode} from 'jwt-decode';
 
 function QuickMenu() {
     const [showMarkAttendanceModal, setShowMarkAttendanceModal] = useState(false);
@@ -10,6 +11,15 @@ function QuickMenu() {
     const [totalAttendance, setTotalAttendance] = useState(0);
     const [showToast, setShowToast] = useState(false);
     const [message, setMessage] = useState('');
+    const [facultyId, setFacultyId] = useState('');
+
+    useEffect(() => {
+            const token = localStorage.getItem("jwt");
+            if (token) {
+                const decodedToken = jwtDecode(token);
+                setFacultyId(decodedToken.id); // Adjust based on your token structure
+            }
+    }, [setFacultyId]);
 
     const handleShowToast = () => {
         setShowToast(true);
@@ -22,37 +32,27 @@ function QuickMenu() {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await fetch("http://localhost:5173/api/students");
+                const response = await fetch("http://localhost:5173/api/students/total-attendance", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ faculty_id : facultyId })
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch students');
                 }
                 const data = await response.json();
                 setStudents(data);
+                setTotalAttendance(7);
             } catch (error) {
                 console.error(error);
             }
         };
-        fetchStudents();
-
-        const fetchTotalAttendance = async () => {
-            try {
-                const response = await fetch("http://localhost:5173/api/students/total-attendance", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch Total Attendance');
-                }
-                const data = await response.json();
-                setTotalAttendance(data.updatedAttendance.attendance);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchTotalAttendance();
-    }, []);
+        if (facultyId) {
+            fetchStudents();
+        }
+    }, [facultyId]);
 
     return (
         <div className="quick-access ">

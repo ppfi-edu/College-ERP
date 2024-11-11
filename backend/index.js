@@ -7,7 +7,7 @@ import {connectDB} from './utils/db.js';
 import cors from 'cors';
 
 const app = express();
-// connectDB();
+connectDB();
 const PORT = 5173
 
 app.use(express.json());
