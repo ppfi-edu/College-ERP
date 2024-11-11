@@ -53,7 +53,7 @@ function ViewStudentBody() {
 
     return (
         <div className="d-flex justify-content-center">
-            <div className="mt-4 mx-5 p-4 border border-3 border-success rounded-4 shadow" style={{ width: "42rem" }}>
+            <div className="mt-4 mx-5 p-4 border border-3 border-success rounded-4 shadow" style={{ width: "62rem" }}>
                 <Form>
                     <Form.Group controlId="searchEmail">
                         <Form.Label>Search by Email</Form.Label>
@@ -72,11 +72,11 @@ function ViewStudentBody() {
                 <div className='mt-3 border border-2 rounded-2 '>
                     <div className="d-flex w-100">
                         <Col xs={4} className="p-3 px-4 fw-bold">Name</Col>
-                        <Col xs={4} className="p-3 px-2 fw-bold">Course</Col>
+                        <Col xs={4} className="p-3 px-2 fw-bold">Courses</Col>
                         <Col xs={4} className="p-3 px-0 fw-bold">Email</Col>
                     </div>
                     <hr className="text-black m-0" />
-                    <div className="scrollable-container" style={{ height: '330px', overflowY: 'auto' }}>
+                    <div className="scrollable-container" style={{ height: '430px', overflowY: 'auto' }}>
                         {filteredStudents
                             .sort((a, b) => a.email.localeCompare(b.email))
                             .map(student => (
@@ -89,7 +89,7 @@ function ViewStudentBody() {
                                   </Col>
                                   <Col xs={4} className="p-4">
                                     <p className="mb-0 text-muted" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                      {student.courseName || "N/A"}
+                                      {student.course_id || "N/A"}
                                     </p>
                                   </Col>
                                   <Col xs={4} className="pt-3">

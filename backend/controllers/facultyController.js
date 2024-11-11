@@ -97,3 +97,17 @@ export const deleteFaculty = async (req, res) => {
         client.release(); // Release the client back to the pool
     }
 };
+
+
+export const getFacultyCourse = async (req, res) => {
+    const client = await connectDB(); // Get a client from connectDB
+    try {
+        const { rows: courses } = await client.query('SELECT * FROM course WHERE faculty_id = $1', [req.params.id]);
+        res.json(courses);
+    } catch (error) {
+        console.error('Error fetching faculty courses:', error); // Log the error for debugging
+        res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        client.release(); // Release the client back to the pool
+    }
+}

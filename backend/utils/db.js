@@ -74,11 +74,9 @@ CREATE TABLE IF NOT EXISTS Attendance (
     id SERIAL PRIMARY KEY,
     faculty_id INT,
     student_id INT,
-    total_attendance INT NOT NULL DEFAULT 0,
-    att_percentage INT NOT NULL DEFAULT 0,
-    total_classes INT NOT NULL DEFAULT 0,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
-    FOREIGN KEY (faculty_id) REFERENCES Faculty(id) ON DELETE CASCADE
+    attendance_date DATE NOT NULL,
+    status attendance_status NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Student(id) ON DELETE CASCADE
 )
 `;
 

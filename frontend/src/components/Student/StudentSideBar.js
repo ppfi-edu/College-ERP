@@ -78,6 +78,12 @@ const Sidebar = () => {
                             <span className="fs-5">View Attendance</span>
                         </Link>
                     </li>
+                    <li className="nav-item p-1">
+                        <Link to="/student/dashboard/library-books" className="nav-link text-black">
+                            <i className="bi bi-info-circle-fill me-2 fs-5"></i>
+                            <span className="fs-5">Library Books</span>
+                        </Link>
+                    </li>
 
                     <li className="nav-item p-1">
                         <Link to="/student/help-support" className="nav-link text-black">

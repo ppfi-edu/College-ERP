@@ -26,13 +26,15 @@ export const studentLogin = async (req, res) => {
 
         // Validate password
         // Uncomment and use this section if password hashing is implemented
-        // const isValidPassword = await bcrypt.compare(password, student.password); // Use bcrypt to compare hashed passwords
-        // console.log('Password validation result:', isValidPassword); // Debug: Log password validation result
+        var isValidPassword = false;
+        if(student.password==password)
+        isValidPassword = true;// Use bcrypt to compare hashed passwords
+        console.log('Password validation result:', isValidPassword); // Debug: Log password validation result
 
-        // if (!isValidPassword) {
-        //     console.log('Invalid password for student:', student.email); // Debug: Log invalid password attempt
-        //     return res.status(401).json({ message: 'Invalid email or password' });
-        // }
+        if (!isValidPassword) {
+            console.log('Invalid password for student:', student.email); // Debug: Log invalid password attempt
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
         // Generate JWT token
         const token = jwt.sign({ id: student.id }, secret); // Set an expiration time for the token

@@ -14,6 +14,8 @@ function ManageProfileBody() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [message, setMessage] = useState('');
@@ -39,7 +41,7 @@ function ManageProfileBody() {
                         console.error('Failed to fetch faculty data');
                     }
                 } catch (error) {
-                    setMessage("Somethigh went wrong");
+                    setMessage("Something went wrong");
                     handleShowToast();
                     console.error('Error fetching faculty data:', error);
                 }
@@ -48,7 +50,6 @@ function ManageProfileBody() {
 
         fetchData();
     }, []);
-
 
     useEffect(() => {
         if (faculty) {
@@ -68,13 +69,26 @@ function ManageProfileBody() {
 
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
+        if (confirmPassword && e.target.value !== confirmPassword) {
+            setPasswordError("Passwords do not match");
+        } else {
+            setPasswordError('');
+        }
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
+        if (password && e.target.value !== password) {
+            setPasswordError("Passwords do not match");
+        } else {
+            setPasswordError('');
+        }
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
+        if (form.checkValidity() === false || passwordError) {
             event.stopPropagation();
             setValidated(true);
             return;
@@ -92,7 +106,7 @@ function ManageProfileBody() {
         setLoading(false);
 
         if (!response.ok) {
-            setMessage("Somethingh went wrong");
+            setMessage("Something went wrong");
             handleShowToast();
             setValidated(false);
         } else {
@@ -101,6 +115,7 @@ function ManageProfileBody() {
             setValidated(false);
         }
     };
+
     return (
         <div className="d-flex justify-content-center">
             <div className='mb-5'>
@@ -151,6 +166,22 @@ function ManageProfileBody() {
                             />
                             <Form.Control.Feedback>
                                 Looks good!
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    </Row>
+                    <Row className="mb-3">
+                        <Form.Group as={Col} md="12" controlId="validationCustom04">
+                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                placeholder="Confirm your password"
+                                required
+                                value={confirmPassword}
+                                onChange={handleConfirmPasswordChange}
+                                isInvalid={!!passwordError}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {passwordError}
                             </Form.Control.Feedback>
                         </Form.Group>
                     </Row>
