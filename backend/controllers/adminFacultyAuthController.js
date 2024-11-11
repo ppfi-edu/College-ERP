@@ -28,10 +28,16 @@ export const adminFacultyLogin = async (req, res) => {
 
     // Validate password if you are using bcrypt for hashing
     // Uncomment this section if password hashing is implemented
-    // const isValidPassword = await bcrypt.compare(password, user.password);
-    // if (!isValidPassword) {
-    //   return res.status(401).json({ message: "Invalid email or password" });
-    // }
+    var isValidPassword = false;
+    if (user.password == password) {
+      isValidPassword = true;
+    }
+
+
+    //const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
     // Generate JWT token
     const token = jwt.sign({ id: user.id, isAdmin: isAdmin }, secret); // Set an expiration for the token

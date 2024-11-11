@@ -29,13 +29,13 @@ const StudentLogin = () => {
     try {
       setLoading(true);
       const lowercasedEmail = email.toLowerCase();
-
+     console.log(password);
       const response = await fetch("http://localhost:5173/api/login/student", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: lowercasedEmail, password }),
+        body: JSON.stringify({ email: lowercasedEmail, password: password }),
       });
       setLoading(false);
 
