@@ -63,7 +63,7 @@ const AdminFacultyLogin = () => {
       handleShowToast();
 
       if (isAdmin) {
-        window.location.href = "/admin/dashboard";
+       window.location.href = "/admin/dashboard";
     console.log("Admin");
       } else {
         window.location.href = "/faculty/dashboard";

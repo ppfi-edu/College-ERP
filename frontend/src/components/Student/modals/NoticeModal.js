@@ -13,7 +13,7 @@ function NoticeModal({ show, handleClose }) {
             const data = await response.json();
 
             // Ensure 'data' is an array
-            if(data != null || data != undefined || data.length != 0){
+            if(data != null || data != undefined || data.length !== 0){
                 setNotice(data);}
                 else{
                     setNotice([]);

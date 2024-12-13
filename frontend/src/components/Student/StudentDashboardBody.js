@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Card from "react-bootstrap/Card";
 import { Link } from "react-router-dom";
 import ViewAttendanceImage from "../../assets/ManageAttendanceImage.png";
@@ -6,12 +5,100 @@ import ManageProfileImage from "../../assets/ManageProfileImage.png";
 import NoticeImage from "../../assets/NoticeImage.png";
 import StudentFeesImage from "../../assets/StudentFeesImage.png";
 import NoticeModal from "./modals/NoticeModal";
+import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+
+
 
 function StudentDashboardBody() {
     const [showNoticeModal, setShowNoticeModal] = useState(false);
 
     const handleShowNoticeModal = () => {setShowNoticeModal(true);};
     const handleCloseNoticeModal = () => {setShowNoticeModal(false);};
+    const [totalFee, setTotalFee] = useState(0);
+    const [showToast, setShowToast] = useState(false);
+    const [averageAttendance, setAttendance] = useState(0);
+    const [message, setMessage] = useState('');
+
+    const handleShowToast = () => {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const token = localStorage.getItem("jwt");
+
+            if (token) {
+                const decodedToken = jwtDecode(token);
+                const id = decodedToken.id;
+                try {
+                    const response = await fetch(`http://localhost:5173/api/students/attendance`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id })
+                    });
+                    if (response.ok) {
+                        const studentData = await response.json();
+
+                        if (studentData.length === 0) {
+                            return;
+                        }
+
+                        const totalAttendance = studentData.reduce((acc, curr) => acc + curr.att_percentage, 0);
+
+                        const averageAttendance = studentData.length > 1 
+                            ? (totalAttendance / studentData.length).toFixed(2) 
+                            : studentData[0].att_percentage;
+
+                        setAttendance(averageAttendance);
+
+                    }
+                } catch (error) {
+                    setMessage("Something went wrong");
+                    handleShowToast();
+                    console.error('Error fetching student data:', error);
+                }
+            }
+        };
+        fetchData();
+    }, []);
+
+
+
+useEffect(() => {
+    const fetchTotalFee = async () => {
+        const token = localStorage.getItem("jwt");
+        try {
+        if (token) {
+        const decodedToken = jwtDecode(token);
+        const  id  = decodedToken.id;
+          const response = await fetch('http://localhost:5173/api/fee/getFee', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ student_id: id })
+          });
+          if (!response.ok) throw new Error('Failed to fetch fee');
+          const data = await response.json();
+          console.log(data);
+          if(data.sum === null){
+            setTotalFee(20000);
+            }else{
+          setTotalFee(data.sum);
+            }
+        }
+      }
+        catch (error) {
+            console.error(error);
+        }
+    };
+    fetchTotalFee();
+}, [totalFee]);
 
     return (
         <div className="d-flex flex-column align-items-center justify-content-center">
@@ -74,7 +161,8 @@ function StudentDashboardBody() {
                                 style={{ width: "7rem", height: "7rem" }}
                             />
                             <Card.Body className="d-flex flex-column align-items-center">
-                                <Card.Title>Attendance</Card.Title>
+                                <Card.Title>Average Attendance</Card.Title>
+                                <Card.Text>{averageAttendance}%</Card.Text>
                             </Card.Body>
                         </div>
                     </Card>
@@ -106,7 +194,8 @@ function StudentDashboardBody() {
                             />
                             <Card.Body className="d-flex flex-column align-items-center">
                                 <Card.Title>Fees</Card.Title>
-                                <Card.Text>12000$</Card.Text>
+                                <Card.Text> {totalFee}</Card.Text>
+            
                             </Card.Body>
                         </div>
                     </Card>
