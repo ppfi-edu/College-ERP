@@ -28,6 +28,7 @@ import StudentHelpAndSupport from './components/StudentHelpAndSupport';
 import Unauthorised from './components/Unauthorised';
 // import { Alert } from 'react-bootstrap';
 import LibraryBooks from './components/Student/LibraryBooksBody';
+import FeeDetails from './components/Student/FeeBody';
 
 function App() {
   const LoggedIn = ({ element }) => {
@@ -181,6 +182,10 @@ function App() {
         <Route
           path="/student/dashboard/library-books"
           element={<PrivateRoute element={<LibraryBooks />} />}
+        />
+        <Route
+          path="/student/fee-details"
+          element={<PrivateRoute element={<FeeDetails />} />}
         />
         <Route
           path="/student/help-support"

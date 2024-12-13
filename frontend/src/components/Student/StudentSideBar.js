@@ -86,6 +86,12 @@ const Sidebar = () => {
                     </li>
 
                     <li className="nav-item p-1">
+                        <Link to="/student/fee-details" className="nav-link text-black">
+                            <i className="bi bi-info-circle-fill me-2 fs-5"></i>
+                            <span className="fs-5">Fee Details</span>
+                        </Link>
+                    </li>
+                    <li className="nav-item p-1">
                         <Link to="/student/help-support" className="nav-link text-black">
                             <i className="bi bi-info-circle-fill me-2 fs-5"></i>
                             <span className="fs-5">Help & Support</span>

@@ -14,14 +14,22 @@ export const getAllFee = async (req, res) => {
 
 
 
-export const getFeeByIdorEmail = async (req, res) => {
+export const getFeeById = async (req, res) => {
     const client = await connectDB();
     try {
-        const { rows: students } = await client.query('SELECT * FROM Fee WHERE student_id = $1 OR student_email = $2', [req.params.student_id, req.params.student_email]);
-        if (students.length === 0) {
+        // Get student_id from Student table using the given id
+        const { rows: studentRows } = await client.query('SELECT student_id FROM Student WHERE id = $1', [req.params.id]);
+        if (studentRows.length === 0) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+        const student_id = studentRows[0].student_id;
+
+        // Get fee details from Fee table using the student_id
+        const { rows: feeRows } = await client.query('SELECT * FROM Fee WHERE student_id = $1', [student_id]);
+        if (feeRows.length === 0) {
             return res.status(404).json({ message: "Fee not found" });
         }
-        res.json(students[0]);
+        res.json(feeRows);
     } catch (error) {
         res.status(500).json({ error: error.message });
     } finally {
@@ -136,4 +144,20 @@ export const Getfeetilldate = async (req, res) => {
         client.release();
     }
 }
+
+export const getTotalFeeofStudent = async (req, res) => {
+    const client = await connectDB();
+    try {
+        const { rows: students } = await client.query('SELECT SUM(amount) FROM Fee WHERE student_id = $1', [req.student_id]);
+        if (students.length === 0) {
+            return res.status(404).json({ message: "Fee not found" });
+        }
+        res.json(students[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+}
+
 

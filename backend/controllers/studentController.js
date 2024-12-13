@@ -269,3 +269,37 @@ export const fetchAllattendanceofStudent = async (req, res) => {
         client.release();
     }
 }
+
+export const averageAttendanceofStudent = async (req, res) => {
+    const client = await connectDB();
+    try {
+        const { id } = req.body;
+
+        // Fetch student_id from Student table using id
+        const { rows: studentRows } = await client.query(
+            'SELECT student_id FROM Student WHERE id = $1',
+            [id]
+        );
+
+        if (studentRows.length === 0) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const student_id = studentRows[0].student_id;
+
+        // Fetch attendance and join with Faculty table using faculty_id
+        const { rows: attendance } = await client.query(
+            'SELECT att_percentage FROM Attendance WHERE student_id = $1',
+            [student_id]
+        );
+
+        const totalAttendance = attendance.reduce((total, { att_percentage }) => total + att_percentage, 0);
+        const averageAttendance = attendance.length > 0 ? totalAttendance / attendance.length : 0;
+
+        res.json({ averageAttendance });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    } finally {
+        client.release();
+    }
+}
