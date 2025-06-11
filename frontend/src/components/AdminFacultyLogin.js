@@ -31,7 +31,7 @@ const AdminFacultyLogin = () => {
       const lowercasedEmail = email.toLowerCase();
 
       const response = await fetch(
-        "https://college-erp-3sin.onrender.com/api/login/admin-faculty",
+        "https://server.ppfi.site/api/login/admin-faculty",
         {
           method: "POST",
           headers: {
