@@ -76,7 +76,12 @@ function ManageAttendanceBody() {
         console.log(filtered);
         setFilteredAttendance(filtered);
     }, [searchStudentId, studentAttendance]);
-
+    
+    const calculateAttendancePercentage = (attendance) => {
+        if (!attendance || attendance.total_classes === 0) return 0; // Prevent division by zero
+        return ((attendance.attended_classes / attendance.total_classes) * 100).toFixed(2); // Return percentage to two decimal places
+    };
+    
     return (
         <div className="d-flex justify-content-center">
             <div>
@@ -146,7 +151,7 @@ function ManageAttendanceBody() {
                         </div>
                         <hr className="text-black m-0" />
                         <div className="scrollable-container" style={{ height: '160px', overflowY: 'auto' }}>
-                            {filteredStudents
+                            {filteredAttendance
                                 .sort((a, b) => a.email.localeCompare(b.email))
                                 .map(student => (
                                     <div
@@ -164,7 +169,7 @@ function ManageAttendanceBody() {
                                             </Col>
                                             <Col xs={4} className="pt-3">
                                                 <p className="mb-0 text-muted overflow-auto">{student.email}</p>
-                                            </Col>
+                                            </Col>filteredStudentsfilteredStudentsfilteredStudents
                                             <Col xs={2} className="p-4">
                                                 <p className="mb-0 text-muted">{calculateAttendancePercentage(student.attendance)}%</p>
                                             </Col>
