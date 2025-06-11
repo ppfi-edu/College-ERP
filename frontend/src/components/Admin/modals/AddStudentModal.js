@@ -34,7 +34,7 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
 
     const fetchCourses = async () => {
         try {
-            const response = await fetch("https://college-erp-3sin.onrender.com/api/courses");
+            const response = await fetch("https://server.ppfi.site/api/courses");
             if (!response.ok) throw new Error('Failed to fetch courses');
             const data = await response.json();
             console.log(data);
@@ -55,7 +55,7 @@ function AddStudentModal({ show, handleClose, setMessage, handleShowToast }) {
 
         setLoading(true);
         console.log({ name, email, password, selectedCourses, enrollmentYear, branch });
-        const response = await fetch("https://college-erp-3sin.onrender.com/api/students/", {
+        const response = await fetch("https://server.ppfi.site/api/students/", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -28,7 +28,7 @@ function RemoveStudentModal({ show, handleClose, setMessage, handleShowToast }) 
 
         setLoading(true);
         try {
-            const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/${email}`, {
+            const response = await fetch(`https://server.ppfi.site/api/students/${email}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

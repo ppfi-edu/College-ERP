@@ -43,7 +43,7 @@ function UpdateFacultyModal({ show, handleClose, faculty, setMessage, handleShow
 
         setValidated(true);
         setLoading(true);
-        const response = await fetch(`https://college-erp-3sin.onrender.com/api/faculty/${faculty.id}`, {
+        const response = await fetch(`https://server.ppfi.site/api/faculty/${faculty.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

@@ -30,7 +30,7 @@ const StudentLogin = () => {
       setLoading(true);
       const lowercasedEmail = email.toLowerCase();
      console.log(password);
-      const response = await fetch("https://college-erp-3sin.onrender.com/api/login/student", {
+      const response = await fetch("https://server.ppfi.site/api/login/student", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -37,7 +37,7 @@ function AddFacultyModal({ show, handleClose, setMessage, handleShowToast }) {
 
 
         setLoading(true);
-        const response = await fetch("https://college-erp-3sin.onrender.com/api/faculty/", {
+        const response = await fetch("https://server.ppfi.site/api/faculty/", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -25,7 +25,7 @@ function FacultyBody() {
     //     const fetchAttendanceData = async () => {
     //         try {
     //             console.log("sending request!!")
-    //             const response = await fetch(`https://college-erp-3sin.onrender.com/api/student/avg/${facultyId}`);
+    //             const response = await fetch(`https://server.ppfi.site/api/student/avg/${facultyId}`);
     //             const data = await response.json();
     //             setTotalStudents(data.totalStudents);
     //             setAverageAttendance(data.totalAttendance);
@@ -50,7 +50,7 @@ function FacultyBody() {
 
                 console.log("Sending request with facultyId!");
 
-                const response = await fetch("https://college-erp-3sin.onrender.com/api/students/avg", {
+                const response = await fetch("https://server.ppfi.site/api/students/avg", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

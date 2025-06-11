@@ -16,7 +16,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
 
     const fetchNotice = async () => {
         try {
-            const response = await fetch("https://college-erp-3sin.onrender.com/api/notice");
+            const response = await fetch("https://server.ppfi.site/api/notice");
             const data = await response.json();
             if(data != null || data != undefined || data.length != 0){
             setNotice(data);}
@@ -54,7 +54,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
         setValidated(true);
         setLoading(true);
 
-        const response = await fetch("https://college-erp-3sin.onrender.com/api/notice/add", {
+        const response = await fetch("https://server.ppfi.site/api/notice/add", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -90,7 +90,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
 
     const handleDeleteNotice = async (id) => {
         try {
-            const response = await fetch(`https://college-erp-3sin.onrender.com/api/notice/${id}`, {
+            const response = await fetch(`https://server.ppfi.site/api/notice/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

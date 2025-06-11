@@ -38,7 +38,7 @@ function ViewFeeDetails() {
                 const decodedToken = jwtDecode(token);
                 const id = decodedToken.id;
                 try {
-                    const response = await fetch(`https://college-erp-3sin.onrender.com/api/fee/${id}`, {
+                    const response = await fetch(`https://server.ppfi.site/api/fee/${id}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json'

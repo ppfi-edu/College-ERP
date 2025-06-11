@@ -23,7 +23,7 @@ const Sidebar = () => {
 
   const fetchFacultyData = async (id) => {
     try {
-      const response = await fetch(`https://college-erp-3sin.onrender.com/api/faculty/${id}`);
+      const response = await fetch(`https://server.ppfi.site/api/faculty/${id}`);
       if (response.ok) {
         const facultyData = await response.json();
         setUserName(facultyData.name);

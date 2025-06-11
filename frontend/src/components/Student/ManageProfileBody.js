@@ -31,7 +31,7 @@ function ManageProfileBody() {
                 const decodedToken = jwtDecode(token);
                 const { id } = decodedToken;
                 try {
-                    const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/${id}`);
+                    const response = await fetch(`https://server.ppfi.site/api/students/${id}`);
                     if (response.ok) {
                         const studentData = await response.json();
                         setStudent(studentData);
@@ -81,7 +81,7 @@ function ManageProfileBody() {
 
         setValidated(true);
         setLoading(true);
-        const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/${student.id}`, {
+        const response = await fetch(`https://server.ppfi.site/api/students/${student.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

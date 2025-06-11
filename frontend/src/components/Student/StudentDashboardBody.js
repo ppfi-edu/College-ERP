@@ -34,7 +34,7 @@ function StudentDashboardBody() {
                 const decodedToken = jwtDecode(token);
                 const id = decodedToken.id;
                 try {
-                    const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/attendance`, {
+                    const response = await fetch(`https://server.ppfi.site/api/students/attendance`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ useEffect(() => {
         if (token) {
         const decodedToken = jwtDecode(token);
         const  id  = decodedToken.id;
-          const response = await fetch('https://college-erp-3sin.onrender.com/api/fee/getFee', {
+          const response = await fetch('https://server.ppfi.site/api/fee/getFee', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

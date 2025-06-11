@@ -42,7 +42,7 @@ function MarkAttendanceModal({ show, handleClose, students, totalAttendance, set
         event.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/update-attendance`, {
+            const response = await fetch(`https://server.ppfi.site/api/students/update-attendance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

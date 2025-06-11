@@ -52,7 +52,7 @@ function ManageFacultyBody() {
   useEffect(() => {
     const fetchFaculty = async () => {
       try {
-        const response = await fetch("https://college-erp-3sin.onrender.com/api/faculty");
+        const response = await fetch("https://server.ppfi.site/api/faculty");
         if (!response.ok) {
           throw new Error('Failed to fetch faculty');
         }
