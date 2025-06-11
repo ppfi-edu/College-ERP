@@ -13,17 +13,17 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
     const [validated, setValidated] = useState(false);
     const [loading, setLoading] = useState(false);
     const [modalUpdated, setModalUpdated] = useState(false);
-
+    
     const fetchNotice = async () => {
         try {
             const response = await fetch("https://server.ppfi.site/api/notice");
             const data = await response.json();
-            if(data != null || data != undefined || data.length != 0){
-            setNotice(data);}
-            else{
+            if (data && data.length > 0) {
+                setNotice(data);
+            } else {
                 setNotice([]);
             }
-
+            
             if (!response.ok) {
                 setMessage("Failed to fetch notice");
                 handleShowToast();
@@ -36,11 +36,11 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
             console.error(error);
         }
     };
-
+    
     useEffect(() => {
         fetchNotice();
     }, [modalUpdated, handleClose, handleShowToast, setMessage]);
-
+    
     const handleSubmit = async (event) => {
         event.preventDefault();
         const form = event.currentTarget;
@@ -50,10 +50,10 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
             setValidated(true);
             return;
         }
-
+        
         setValidated(true);
         setLoading(true);
-
+        
         const response = await fetch("https://server.ppfi.site/api/notice/add", {
             method: 'POST',
             headers: {
@@ -65,7 +65,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
             })
         });
         setLoading(false);
-
+        
         if (!response.ok) {
             setMessage("Failed to add notice");
             handleShowToast();
@@ -79,15 +79,15 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
             setNoticeTitle(''); // Clear the title after submission
         }
     };
-
+    
     const handleNoticeChange = (e) => {
         setNoticeDescription(e.target.value);
     };
-
+    
     const handleNoticeTitleChange = (e) => {
         setNoticeTitle(e.target.value); // Add this handler for title input
     };
-
+    
     const handleDeleteNotice = async (id) => {
         try {
             const response = await fetch(`https://server.ppfi.site/api/notice/${id}`, {
@@ -96,7 +96,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
                     'Content-Type': 'application/json'
                 }
             });
-
+            
             if (!response.ok) {
                 setMessage("Failed to delete notice");
                 handleShowToast();
@@ -109,7 +109,7 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
             console.error(error);
         }
     }
-
+    
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -199,3 +199,28 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
 }
 
 export default NoticeModal;
+
+
+
+const fetchNotice = async () => {
+    try {
+        const response = await fetch("https://server.ppfi.site/api/notice");
+        const data = await response.json();
+        if (data && data.length > 0) {
+            setNotice(data);
+        } else {
+            setNotice([]);
+        }
+        
+        if (!response.ok) {
+            setMessage("Failed to fetch notice");
+            handleShowToast();
+            handleClose();
+            setValidated(false);
+        } else {
+            setValidated(false);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
