@@ -26,7 +26,7 @@ export default function LibraryBooks() {
 
   const fetchAllBooks = async () => {
     try {
-      const response = await fetch('http://localhost:5173/api/lib')
+      const response = await fetch('https://college-erp-3sin.onrender.com/api/lib')
       if (!response.ok) throw new Error('Failed to fetch books')
       const data = await response.json()
       setBooks(data)
@@ -38,7 +38,7 @@ export default function LibraryBooks() {
   const handleAddBook = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch('http://localhost:5173/api/lib/add', {
+      const response = await fetch('https://college-erp-3sin.onrender.com/api/lib/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBook)
@@ -56,7 +56,7 @@ export default function LibraryBooks() {
   const handleIssueBook = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(`http://localhost:5173/api/lib/IssueBook/${issueBook.id}`, {
+      const response = await fetch(`https://college-erp-3sin.onrender.com/api/lib/IssueBook/${issueBook.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(issueBook)
@@ -74,7 +74,7 @@ export default function LibraryBooks() {
   const handleReturnBook = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(`http://localhost:5173/api/lib/return/${returnBook.id}`, {
+      const response = await fetch(`https://college-erp-3sin.onrender.com/api/lib/return/${returnBook.id}`, {
         method: 'POST'
       })
       if (!response.ok) throw new Error('Failed to return book')
@@ -90,7 +90,7 @@ export default function LibraryBooks() {
 
   const handleDeleteBook = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5173/api/lib/remove/${id}`, {
+      const response = await fetch(`https://college-erp-3sin.onrender.com/api/lib/remove/${id}`, {
         method: 'DELETE'
       })
       if (!response.ok) throw new Error('Failed to delete book')

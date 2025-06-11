@@ -26,7 +26,7 @@ function UpdateCourseModal({ show, handleClose, course, setMessage, handleShowTo
 
         setValidated(true);
         setLoading(true);
-        const response = await fetch(`http://localhost:5173/api/courses/${course.id}`, {
+        const response = await fetch(`https://college-erp-3sin.onrender.com/api/courses/${course.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

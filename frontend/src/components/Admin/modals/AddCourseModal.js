@@ -28,7 +28,7 @@ function AddCourseModal({ show, handleClose, setMessage, handleShowToast }) {
         setValidated(true);
         setLoading(true);
 
-        const response = await fetch("http://localhost:5173/api/courses/", {
+        const response = await fetch("https://college-erp-3sin.onrender.com/api/courses/", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

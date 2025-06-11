@@ -12,21 +12,21 @@ function AdminBody() {
   const [totalCourse, setTotalCourse] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:5173/api/faculty/")
+    fetch("https://college-erp-3sin.onrender.com/api/faculty/")
       .then((response) => response.json())
       .then((data) => setTotalFaculties(data.length))
       .catch((error) => console.error("Error fetching faculties:", error));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5173/api/students/")
+    fetch("https://college-erp-3sin.onrender.com/api/students/")
       .then((response) => response.json())
       .then((data) => setTotalStudents(data.length))
       .catch((error) => console.error("Error fetching students:", error));
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5173/api/courses/")
+    fetch("https://college-erp-3sin.onrender.com/api/courses/")
       .then((response) => response.json())
       .then((data) => setTotalCourse(data.length))
       .catch((error) => console.error("Error fetching courses:", error));

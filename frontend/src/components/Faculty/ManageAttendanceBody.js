@@ -46,7 +46,7 @@ function ManageAttendanceBody() {
         console.log(faculty_id);
         const fetchStudentsAttendance = async () => {
             try {
-                const response = await fetch("http://localhost:5173/api/students/total-attendance", {
+                const response = await fetch("https://college-erp-3sin.onrender.com/api/students/total-attendance", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

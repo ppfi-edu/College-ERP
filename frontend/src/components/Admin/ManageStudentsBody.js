@@ -55,7 +55,7 @@ function ManageStudentsBody() {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await fetch("http://localhost:5173/api/students");
+                const response = await fetch("https://college-erp-3sin.onrender.com/api/students");
                 if (!response.ok) {
                     throw new Error('Failed to fetch students');
                 }
@@ -69,7 +69,7 @@ function ManageStudentsBody() {
 
         const fetchCourses = async () => {
             try {
-                const response = await fetch("http://localhost:5173/api/courses");
+                const response = await fetch("https://college-erp-3sin.onrender.com/api/courses");
                 if (!response.ok) {
                     throw new Error('Failed to fetch courses');
                 }

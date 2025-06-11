@@ -23,7 +23,7 @@ const Sidebar = () => {
 
     const fetchStudentData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5173/api/students/${id}`);
+            const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/${id}`);
             if (response.ok) {
                 const studentData = await response.json();
                 setUserName(studentData.name);

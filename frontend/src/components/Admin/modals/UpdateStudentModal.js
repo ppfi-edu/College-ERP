@@ -31,7 +31,7 @@ function UpdateStudentModal({ show, handleClose, student, setMessage, handleShow
 
     const fetchCourses = async () => {
         try {
-            const response = await fetch("http://localhost:5173/api/courses");
+            const response = await fetch("https://college-erp-3sin.onrender.com/api/courses");
             if (!response.ok) {
                 throw new Error('Failed to fetch courses');
             }
@@ -69,7 +69,7 @@ function UpdateStudentModal({ show, handleClose, student, setMessage, handleShow
 
         setValidated(true);
         setLoading(true);
-        const response = await fetch(`http://localhost:5173/api/students/${student.id}`, {
+        const response = await fetch(`https://college-erp-3sin.onrender.com/api/students/${student.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

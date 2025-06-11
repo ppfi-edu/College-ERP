@@ -27,7 +27,7 @@ function RemoveFacultyModal({ show, handleClose, setMessage, handleShowToast }) 
 
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:5173/api/faculty/${email}`, {
+            const response = await fetch(`https://college-erp-3sin.onrender.com/api/faculty/${email}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

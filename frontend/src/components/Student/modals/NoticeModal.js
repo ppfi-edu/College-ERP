@@ -9,7 +9,7 @@ function NoticeModal({ show, handleClose }) {
 
     const fetchNotice = async () => {
         try {
-            const response = await fetch("http://localhost:5173/api/notice");
+            const response = await fetch("https://college-erp-3sin.onrender.com/api/notice");
             const data = await response.json();
 
             // Ensure 'data' is an array

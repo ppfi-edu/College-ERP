@@ -27,7 +27,7 @@ export default function FeeManagementSystem() {
   const fetchAllFees = async () => {
     try {
         console.log("Fetching all fees")
-      const response = await fetch('http://localhost:5173/api/fee/Fee')
+      const response = await fetch('https://college-erp-3sin.onrender.com/api/fee/Fee')
       if (!response.ok) throw new Error('Failed to fetch fees')
       const data = await response.json()
       setFees(data)
@@ -39,7 +39,7 @@ export default function FeeManagementSystem() {
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`http://localhost:5173/api/fee/${searchTerm}`)
+      const response = await fetch(`https://college-erp-3sin.onrender.com/api/fee/${searchTerm}`)
       if (!response.ok) throw new Error('Failed to fetch fee')
       const data = await response.json()
       setFees([data])
@@ -53,7 +53,7 @@ export default function FeeManagementSystem() {
     try {
         console.log("Creating fee")
         console.log("student_email : ", student_email);
-      const url = 'http://localhost:5173/api/fee/create-fee'
+      const url = 'https://college-erp-3sin.onrender.com/api/fee/create-fee'
       const method = 'POST'
       const response = await fetch(url, {
         method,
@@ -72,7 +72,7 @@ export default function FeeManagementSystem() {
 
   const handleUpdateFee = async (id) => {
     try {
-        const url = `http://localhost:5173/api/fee/update`
+        const url = `https://college-erp-3sin.onrender.com/api/fee/update`
         const method = 'PUT'
         const response = await fetch(url, {
             method,
@@ -91,7 +91,7 @@ export default function FeeManagementSystem() {
 
   const handleAddFeeForAll = async (reason, amount) => {
     try {
-        const response = await fetch('http://localhost:5173/api/fee/AddFee', {
+        const response = await fetch('https://college-erp-3sin.onrender.com/api/fee/AddFee', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -108,7 +108,7 @@ export default function FeeManagementSystem() {
 
 const handleDeleteFee = async (id) => {
     try {
-        const response = await fetch(`http://localhost:5173/api/fee/delete/${id}`, {
+        const response = await fetch(`https://college-erp-3sin.onrender.com/api/fee/delete/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) throw new Error('Failed to delete fee');
