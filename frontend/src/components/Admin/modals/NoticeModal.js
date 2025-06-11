@@ -199,28 +199,3 @@ function NoticeModal({ show, handleClose, setMessage, handleShowToast }) {
 }
 
 export default NoticeModal;
-
-
-
-const fetchNotice = async () => {
-    try {
-        const response = await fetch("https://server.ppfi.site/api/notice");
-        const data = await response.json();
-        if (data && data.length > 0) {
-            setNotice(data);
-        } else {
-            setNotice([]);
-        }
-        
-        if (!response.ok) {
-            setMessage("Failed to fetch notice");
-            handleShowToast();
-            handleClose();
-            setValidated(false);
-        } else {
-            setValidated(false);
-        }
-    } catch (error) {
-        console.error(error);
-    }
-};
